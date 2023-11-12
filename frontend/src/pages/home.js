@@ -16,23 +16,23 @@ class Home extends React.Component {
         <div className="container">
           {this.context.logged !== false ? (
             <>
-              <div class="input-group mb-3 mt-5">
+              <div className="input-group mb-3 mt-5">
                 <button
                   type="submit"
-                  class="btn btn-primary mb-3 form-control border border-dark"
+                  className="btn btn-primary mb-3 form-control border border-dark"
                   style={{ borderRadius: "20px 0px 0px 20px" }}
                   onClick={() => this.setVisual("active")}>
                   My active
                 </button>
                 <button
                   type="submit"
-                  class="btn btn-primary mb-3 form-control border border-dark"
+                  className="btn btn-primary mb-3 form-control border border-dark"
                   onClick={() => this.setVisual("shared")}>
                   Shared
                 </button>
                 <button
                   type="submit"
-                  class="btn btn-primary mb-3 form-control border border-dark "
+                  className="btn btn-primary mb-3 form-control border border-dark "
                   style={{ borderRadius: "0px 20px 20px 0px" }}
                   onClick={() => this.setVisual("archived")}>
                   Archived

@@ -1,69 +1,41 @@
-import React from "react";
-
+import React, { useState, useContext } from "react";
+import { useNavigate } from "react-router-dom";
 import { ShoppingListContext } from "../context/shoppingListContext";
+import ListCard from "./listcard/listcard";
 
-import { Link } from "react-router-dom";
+const ShoppingListList = () => {
+  const context = useContext(ShoppingListContext);
+  const navigate = useNavigate();
 
-class ShoppingListList extends React.Component {
-  static contextType = ShoppingListContext;
-  constructor(props) {
-    super(props);
-    this.state = {
-      gateways: [],
-    };
-  }
-
-  showList = (List) => {
-    let currentlist = this.context.lists.find((l) => l.name === List);
-    window.location.href = `/${List}`;
+  const showLists = () => {
+    if (context.logged) {
+      const userLists = context.lists.filter(
+        (list) => list.owner === context.user.nickname
+      );
+      return userLists.map((list) => (
+        <ListCard
+          key={list._id}
+          name={list.name}
+          owner={list.owner}
+          created={list.created}
+          status={`${list.items.filter((i) => i.checked === true).length}/${
+            list.items.length
+          }`}
+        />
+      ));
+    } else {
+      return <p>You must be logged in to see your lists.</p>;
+    }
   };
 
-  showLists = () => {
-    let user = this.context.logged;
-    let userLists = this.context.users.find((u) => u.nickname === user).lists[
-      this.context.visualList
-    ];
-    console.log("userLists: ", userLists);
-
-    let userListsdata = this.context.lists.filter((l) =>
-      userLists.includes(l.name)
-    );
-    console.log("visualList: ", userListsdata);
-    userListsdata = userListsdata.map((l) => (
-      <>
-        <div class="input-group mb-3 mt-5">
-          <a className="btn btn-primary" href={"/" + l.name}>
-            Open
-          </a>
-          <span class="input-group-text w-50" id="inputGroup-sizing-lg">
-            {l.name}
-          </span>
-          <span class="input-group-text w-25" id="inputGroup-sizing-sm">
-            {l.created}
-          </span>
-          <span class="input-group-text" id="inputGroup-sizing-sm">
-            {l.owner}
-          </span>
-          <span class="input-group-text" id="inputGroup-sizing-sm">
-            {l.items.filter((i) => i.checked === true).length} /{" "}
-            {l.items.length}
-          </span>
-        </div>
-      </>
-    ));
-    return userListsdata;
-  };
-  render() {
-    return (
-      <>
-        <div>
-          <h1>Your {this.context.visualList} shopping list</h1>
-        </div>
-
-        {this.showLists()}
-      </>
-    );
-  }
-}
+  return (
+    <>
+      <div className="container pb-5">
+        <h1>Shopping List List</h1>
+        <div className="row row-cols-1 row-cols-md-3 g-4">{showLists()}</div>
+      </div>
+    </>
+  );
+};
 
 export default ShoppingListList;

@@ -56,7 +56,7 @@ export const LoginForm = () => {
         if (data.success === true) {
           localStorage.setItem("token", data.token);
           setSubmitting(false);
-          context.setIsAuth(true);
+          context.setLogged(true);
           context.setToken(data.token);
           context.setUser(data.user);
           console.log(data);

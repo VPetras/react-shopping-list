@@ -10,7 +10,7 @@ const NavBar = () => {
   const logout = (event) => {
     event.preventDefault();
 
-    context.setIsAuth(false);
+    context.setLogged(false);
     context.setUser({});
     context.setToken("");
 
@@ -18,7 +18,7 @@ const NavBar = () => {
   };
 
   useEffect(() => {
-    if (!context.isAuth) {
+    if (!context.logged) {
       console.log("Not logged in");
       if (localStorage.getItem("token")) {
         fetch("https://api.uu.vojtechpetrasek.com/v4/user", {
@@ -33,7 +33,7 @@ const NavBar = () => {
             console.log(data);
             if (data.success === true) {
               context.setUser(data.user);
-              context.setIsAuth(true);
+              context.setLogged(true);
               context.setToken(localStorage.getItem("token"));
             }
           });
@@ -44,6 +44,8 @@ const NavBar = () => {
   }, []);
 
   console.log(context);
+
+  console.log("logged: ", context.logged);
 
   return (
     <>
@@ -59,23 +61,29 @@ const NavBar = () => {
                   Docs (API)
                 </Link>
               </li>
-              {context.isAuth && (
-                <li className="nav-item">
-                  <Link className="nav-link" to="/active">
-                    My active
-                  </Link>
-                  <Link className="nav-link" to="/shared">
-                    Shared with me
-                  </Link>
-                  <Link className="nav-link" to="/archived">
-                    Archived
-                  </Link>
-                </li>
+              {context.logged && (
+                <>
+                  <li className="nav-item">
+                    <Link className="nav-link" to="/active">
+                      My active
+                    </Link>
+                  </li>
+                  <li className="nav-item">
+                    <Link className="nav-link" to="/shared">
+                      Shared with me
+                    </Link>
+                  </li>
+                  <li className="nav-item">
+                    <Link className="nav-link" to="/archived">
+                      Archived
+                    </Link>
+                  </li>
+                </>
               )}
             </ul>
           </div>
 
-          {context.isAuth ? (
+          {context.logged ? (
             <>
               <ul className="navbar-nav">
                 <li className="nav-item dropdown">

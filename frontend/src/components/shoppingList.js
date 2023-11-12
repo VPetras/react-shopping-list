@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { ShoppingListContext } from "../context/shoppingListContext";
 import ListCard from "./listcard/listcard";
 
-const ShoppingListList = () => {
+const ShoppingListList = (props) => {
   const context = useContext(ShoppingListContext);
   const navigate = useNavigate();
 
@@ -31,7 +31,9 @@ const ShoppingListList = () => {
   return (
     <>
       <div className="container pb-5">
-        <h1>Shopping List List</h1>
+        <div>
+          <h1>Your {context.visualList} shopping list</h1>
+        </div>
         <div className="row row-cols-1 row-cols-md-3 g-4">{showLists()}</div>
       </div>
     </>

@@ -64,7 +64,7 @@ const NavBar = () => {
               {context.logged && (
                 <>
                   <li className="nav-item">
-                    <Link className="nav-link" to="/active">
+                    <Link className="nav-link" to="/">
                       My active
                     </Link>
                   </li>

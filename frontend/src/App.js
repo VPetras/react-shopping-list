@@ -26,6 +26,8 @@ function App() {
         <NavBar />
         <Routes>
           <Route exact path="/" element={<Home />} />
+          <Route path="/shared" element={<Home />} />
+          <Route path="/archived" element={<Home />} />
           <Route path="/list/:id" element={<List />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />

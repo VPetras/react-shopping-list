@@ -1,6 +1,4 @@
 import React from "react";
-import Navbar from "../components/navbar/navbar";
-import Footer from "../components/footer/footer";
 
 import { ShoppingListContext } from "../context/shoppingListContext";
 
@@ -72,13 +70,11 @@ class ShoppingList extends React.Component {
   render() {
     return (
       <>
-        <Navbar />
         <div className="container">
           <h1>{this.props.id}</h1>
           <button onClick={() => this.checkItem("máslo")}>test</button>
           {this.showList(this.props.id)}
         </div>
-        <Footer />
       </>
     );
   }

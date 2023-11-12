@@ -1,8 +1,5 @@
 import React from "react";
 
-import Navbar from "../components/navbar/navbar";
-import Footer from "../components/footer/footer";
-
 import { ShoppingListContext } from "../context/shoppingListContext";
 import ShoppingListList from "../components/shoppingList";
 
@@ -16,7 +13,6 @@ class Home extends React.Component {
   render() {
     return (
       <>
-        <Navbar />
         <div className="container">
           {this.context.logged !== false ? (
             <>
@@ -63,7 +59,6 @@ class Home extends React.Component {
             </div>
           )}
         </div>
-        <Footer />
       </>
     );
   }

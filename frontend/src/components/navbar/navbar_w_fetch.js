@@ -12,13 +12,36 @@ const NavBar = () => {
 
     context.setLogged(false);
     context.setUser({});
+    context.setToken("");
+
+    navigate("/login");
   };
 
-  const login = (nickname) => (event) => {
-    event.preventDefault();
-    context.setLogged(true);
-    context.setUser({ nickname: nickname });
-  };
+  useEffect(() => {
+    if (!context.logged) {
+      console.log("Not logged in");
+      if (localStorage.getItem("token")) {
+        fetch("https://api.uu.vojtechpetrasek.com/v4/user", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            console.log(data);
+            if (data.success === true) {
+              context.setUser(data.user);
+              context.setLogged(true);
+              context.setToken(localStorage.getItem("token"));
+            }
+          });
+      }
+    } else {
+      console.log("Already logged in");
+    }
+  }, []);
 
   console.log(context);
 
@@ -38,7 +61,7 @@ const NavBar = () => {
                   Docs (API)
                 </Link>
               </li>
-              {/*context.logged && (
+              {context.logged && (
                 <>
                   <li className="nav-item">
                     <Link className="nav-link" to="/">
@@ -56,7 +79,7 @@ const NavBar = () => {
                     </Link>
                   </li>
                 </>
-              )*/}
+              )}
             </ul>
           </div>
 
@@ -77,7 +100,7 @@ const NavBar = () => {
                     aria-labelledby="navbarDarkDropdownMenuLink">
                     <li>
                       <Link className="dropdown-item" to="/account">
-                        TODO: Account
+                        Account
                       </Link>
                     </li>
                     <li>
@@ -90,38 +113,9 @@ const NavBar = () => {
               </ul>
             </>
           ) : (
-            <>
-              <ul className="navbar-nav">
-                <li className="nav-item dropdown">
-                  <a
-                    href="#"
-                    className="nav-link dropdown-toggle"
-                    role="button"
-                    data-bs-toggle="dropdown"
-                    aria-expanded="false">
-                    Log in
-                  </a>
-                  <ul
-                    className="dropdown-menu dropdown-menu-dark"
-                    aria-labelledby="navbarDarkDropdownMenuLink">
-                    <>
-                      {context.users.map((user) => (
-                        <>
-                          {console.log(user)}
-                          <li>
-                            <a
-                              className="dropdown-item"
-                              onClick={login(user.nickname)}>
-                              {user.nickname}
-                            </a>
-                          </li>
-                        </>
-                      ))}
-                    </>
-                  </ul>
-                </li>
-              </ul>
-            </>
+            <Link to="/login" className="btn btn-outline-light">
+              Login
+            </Link>
           )}
         </div>
       </nav>

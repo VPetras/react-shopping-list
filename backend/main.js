@@ -6,6 +6,9 @@ var cors = require("cors");
 const swaggerUi = require("swagger-ui-express");
 const swaggerDocument = require("./docs/swagger.json");
 
+const auth = require("./auth.js");
+const list = require("./list.js");
+
 var app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -15,6 +18,9 @@ app.use("/v4/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use(cors());
 
 dotenv.config();
+
+app.use("/", auth);
+app.use("/", list);
 
 app.get("/", (req, res) => {
   res.send("Hello World!");

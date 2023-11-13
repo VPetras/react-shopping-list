@@ -1,0 +1,30 @@
+[
+  {
+    "id": 1,
+    "awid": 12345678,
+    "name": "test-user-1",
+    "email": "test1@test.com",
+    "password": "testtest",
+    "sys": {
+      "cts": "2017-08-01T00:00:00.000Z",
+      "mts": "2017-08-01T00:00:00.000Z",
+      "rev": 1
+    },
+    "shopping_lists": [1, 2, 5],
+    "shared_shopping_lists": [4]
+  },
+  {
+    "id": 2,
+    "awid": 12345678,
+    "name": "test-user-2",
+    "email": "test2@test.com",
+    "password": "testtest",
+    "sys": {
+      "cts": "2017-08-01T00:00:00.000Z",
+      "mts": "2017-08-01T00:00:00.000Z",
+      "rev": 1
+    },
+    "shopping_lists": [3, 4],
+    "shared_shopping_lists": [1, 2]
+  }
+]

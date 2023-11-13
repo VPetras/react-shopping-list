@@ -1,0 +1,157 @@
+[
+  {
+    "id": 1,
+    "awid": 13245678,
+    "sys": {
+      "cts": "2017-01-01 00:00:00",
+      "mts": "2017-01-01 00:00:00",
+      "rev": 1
+    },
+    "name": "test-list-1",
+    "owner_id": 1,
+    "owner_name": "test-user-1",
+    "archived": false,
+    "shared_users": [
+      {
+        "id": 2,
+        "name": "test-user-2"
+      }
+    ],
+    "item_list": [
+      {
+        "name": "test-item-1",
+        "quantity": 1,
+        "unit": "pcs",
+        "checked": false
+      },
+      {
+        "name": "test-item-2",
+        "quantity": 2,
+        "unit": "pcs",
+        "checked": false
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "awid": 13245678,
+    "sys": {
+      "cts": "2017-01-01 00:00:00",
+      "mts": "2017-01-01 00:00:00",
+      "rev": 1
+    },
+    "name": "test-list-2",
+    "owner_id": 1,
+    "owner_name": "test-user-1",
+    "archived": false,
+    "shared_users": [
+      {
+        "id": 2,
+        "name": "test-user-2"
+      }
+    ],
+    "item_list": [
+      {
+        "name": "test-item-1",
+        "quantity": 1,
+        "unit": "pcs",
+        "checked": false
+      },
+      {
+        "name": "test-item-2",
+        "quantity": 2,
+        "unit": "pcs",
+        "checked": false
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "awid": 13245678,
+    "sys": {
+      "cts": "2017-01-01 00:00:00",
+      "mts": "2017-01-01 00:00:00",
+      "rev": 1
+    },
+    "name": "test-list-3",
+    "owner_id": 2,
+    "owner_name": "test-user-2",
+    "archived": false,
+    "shared_users": [],
+    "item_list": [
+      {
+        "name": "test-item-1",
+        "quantity": 1,
+        "unit": "pcs",
+        "checked": false
+      },
+      {
+        "name": "test-item-2",
+        "quantity": 2,
+        "unit": "pcs",
+        "checked": false
+      }
+    ]
+  },
+  {
+    "id": 4,
+    "awid": 13245678,
+    "sys": {
+      "cts": "2017-01-01 00:00:00",
+      "mts": "2017-01-01 00:00:00",
+      "rev": 1
+    },
+    "name": "test-list-4",
+    "owner_id": 2,
+    "owner_name": "test-user-2",
+    "archived": false,
+    "shared_users": [
+      {
+        "id": 1,
+        "name": "test-user-1"
+      }
+    ],
+    "item_list": [
+      {
+        "name": "test-item-1",
+        "quantity": 1,
+        "unit": "pcs",
+        "checked": false
+      },
+      {
+        "name": "test-item-2",
+        "quantity": 2,
+        "unit": "pcs",
+        "checked": false
+      }
+    ]
+  },
+  {
+    "id": 5,
+    "awid": 13245678,
+    "sys": {
+      "cts": "2017-01-01 00:00:00",
+      "mts": "2017-01-01 00:00:00",
+      "rev": 1
+    },
+    "name": "test-list-5",
+    "owner_id": 1,
+    "owner_name": "test-user-1",
+    "archived": true,
+    "shared_users": [],
+    "item_list": [
+      {
+        "name": "test-item-1",
+        "quantity": 1,
+        "unit": "pcs",
+        "checked": false
+      },
+      {
+        "name": "test-item-2",
+        "quantity": 2,
+        "unit": "pcs",
+        "checked": false
+      }
+    ]
+  }
+]

@@ -1,35 +1,45 @@
-import React, { useState, useContext } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useContext, useEffect } from "react";
+import ItemList from "../components/items/itemlist";
+import AddItem from "../components/items/additem";
+import DeleteList from "../components/listcard/deletelist";
+import EditList from "../components/listcard/editlist";
+
 import { ShoppingListContext } from "../context/shoppingListContext";
-import ShoppingListList from "../components/shoppingList";
+import ArchiveList from "../components/listcard/archivelist";
+import UnArchiveList from "../components/listcard/unarchivelist";
 
 const ShoppingList = (props) => {
   const context = useContext(ShoppingListContext);
-  const navigate = useNavigate();
 
-  const items = context.lists.filter((list) => list.name === props.id)[0].items;
+  let list = context.lists.filter((list) => list.name === props.id)[0];
 
-  const showItems = () => {
-    return items.map((item) => (
-      <div class="input-group mb-3 mt-5">
-        <span class="input-group-text w-50" id="inputGroup-sizing-lg">
-          {item.name}
-        </span>
-        <span class="input-group-text w-25" id="inputGroup-sizing-sm">
-          {item.quantity}
-        </span>
-        <button class="input-group-text" id="inputGroup-sizing-sm">
-          {item.checked ? "checked" : "unchecked"}
-        </button>
-      </div>
-    ));
+  const handleEditList = (l) => {
+    context.setLists([...context.lists, l]);
   };
+
+  useEffect(() => {
+    list = context.lists.filter((list) => list.name === props.id)[0];
+  });
 
   return (
     <>
-      <div className="container">
-        <h1 className="">{props.id}</h1>
-        <div className="row row-cols-1 row-cols-md-3 g-4">{showItems()}</div>
+      <div className="container p-5">
+        <h1>{props.id}</h1>
+        <div className="row">
+          {context.user.nickname === list.owner && (
+            <>
+              <DeleteList id={props.id} />
+              <EditList id={props.id} handleEdit={handleEditList} />
+              {!list.archived ? (
+                <ArchiveList id={props.id} />
+              ) : (
+                <UnArchiveList id={props.id} />
+              )}
+            </>
+          )}
+        </div>
+        <ItemList id={props.id} />
+        {!list.archived && <AddItem id={props.id} />}
       </div>
     </>
   );

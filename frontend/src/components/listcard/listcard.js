@@ -1,8 +1,7 @@
 import React, { useState, useContext } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 const ListCard = (props) => {
-  const navigate = useNavigate();
   return (
     <div className="col">
       <div className="card">

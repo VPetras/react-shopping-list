@@ -1,0 +1,42 @@
+[{
+  "_id": {
+    "$oid": "65634ba0c26ac98e6d48addb"
+  },
+  "name": "Vojtěch",
+  "surname": "Petrásek",
+  "nickname": "VPetras",
+  "email": "vojtechpetrasek@gmail.com",
+  "password": "$2b$10$gbOJSaD2eDFUebev7vALCeba9C3Fckavpcb1vIj8B/oPIgmE3oSu6",
+  "sys": {
+    "cts": {
+      "$date": "2023-11-26T13:44:00.473Z"
+    },
+    "mts": {
+      "$date": "2023-11-26T13:44:00.473Z"
+    },
+    "rev": 0
+  },
+  "shoping_lists": [],
+  "shared_shopping_lists": []
+},
+{
+  "_id": {
+    "$oid": "65634ce1518af453cb3014ac"
+  },
+  "name": "Vojtěch",
+  "surname": "Petrásek",
+  "nickname": "Sonic",
+  "email": "vojtech.petrasek@gmail.com",
+  "password": "$2b$10$smjxcZ7rZhzENRoyk.FNIuDAXCNcvrEX4uRn/pDFZwM.XzW0PZcBi",
+  "sys": {
+    "cts": {
+      "$date": "2023-11-26T13:49:21.028Z"
+    },
+    "mts": {
+      "$date": "2023-11-26T13:49:21.028Z"
+    },
+    "rev": 0
+  },
+  "shoping_lists": [],
+  "shared_shopping_lists": []
+}]

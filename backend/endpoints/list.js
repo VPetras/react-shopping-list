@@ -1,4 +1,5 @@
 const express = require("express");
+const { ObjectId } = require("mongodb");
 const router = express.Router();
 const { validationResult, matchedData } = require("express-validator");
 const {
@@ -7,7 +8,16 @@ const {
   updateListValidator,
 } = require("../validations/lists_validations.js");
 
-const lists = require("../test_data/lists.json");
+const {
+  createList,
+  updateList,
+  getActiveLists,
+  getArchivedLists,
+  getSharedLists,
+  deleteList,
+  getList,
+} = require("../db/lists.js");
+
 const auth = require("../middlewares/auth.js");
 
 function withoutProperty(obj, property) {
@@ -21,14 +31,18 @@ router.get("/lists", tokenValidator, auth, (req, res) => {
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
   }
-
-  let owned_lists = lists.filter((list) => list.owner_id === req.user.id);
-  let shared_lists = lists.filter(
-    (list) =>
-      list.shared_users.filter((user) => user.id === req.user.id).length !== 0
-  );
-
-  res.status(200).json({ owned_lists, shared_lists });
+  getActiveLists(req.user._id).then((active_lists) => {
+    getArchivedLists(req.user._id).then((archived_lists) => {
+      getSharedLists(req.user._id).then((shared_lists) => {
+        let lists = {
+          active_lists: active_lists,
+          archived_lists: archived_lists,
+          shared_lists: shared_lists,
+        };
+        return res.status(200).json(lists);
+      });
+    });
+  });
 });
 
 router.get("/list/:id", tokenValidator, auth, (req, res) => {
@@ -42,22 +56,26 @@ router.get("/list/:id", tokenValidator, auth, (req, res) => {
   console.log(req.user);
 
   //check if list exists and belongs to user
-  let list = lists.find((list) => String(list.id) === list_id);
-  console.log(list);
-
-  if (!list) {
-    return res.status(404).json({ errors: ["List not found"] });
-  }
-
-  if (list.owner_id !== req.user.id) {
-    if (
-      list.shared_users.filter((user) => user.id === req.user.id).length === 0
-    ) {
-      return res.status(403).json({ errors: ["Forbidden"] });
+  getList(list_id).then((list) => {
+    if (!list) {
+      return res.status(404).json({ errors: ["List not found"] });
     }
-  }
 
-  res.status(200).json(list);
+    console.log(list);
+
+    if (list.owner_id !== req.user._id) {
+      if (
+        list.shared_users.filter((user) => user.id === req.user._id).length ===
+        0
+      ) {
+        return res.status(403).json({ errors: ["Forbidden"] });
+      } else {
+        return res.status(200).json(list);
+      }
+    } else {
+      return res.status(200).json(list);
+    }
+  });
 });
 
 router.post("/list/create", createListValidator, auth, (req, res) => {
@@ -66,24 +84,29 @@ router.post("/list/create", createListValidator, auth, (req, res) => {
     let data = matchedData(req);
 
     let new_list = {
-      id: lists.length + 1,
       sys: {
         cts: new Date().toISOString(),
         mts: new Date().toISOString(),
-        ver: 1,
+        ver: 0,
       },
       name: data.name,
-      owner_id: req.user.id,
-      owner_name: req.user.name,
-      shared: data.shared || false,
+      owner_id: req.user._id,
+      owner_name: req.user.nickname,
+      archived: data.archived || false,
       shared_users: data.shared_users || [],
-      items: data.items || [],
+      item_list: data.item_list || [],
     };
 
-    lists.push(new_list);
-    return res.status(201).json(new_list);
+    createList(new_list).then((result) => {
+      if (result.acknowledged) {
+        return res.status(201).json(new_list);
+      } else {
+        return res.status(500).json({ errors: ["Internal Server Error"] });
+      }
+    });
+  } else {
+    res.status(400).json({ errors: errors.array() });
   }
-  res.status(400).json({ errors: errors.array() });
 });
 
 router.delete("/list/:id", tokenValidator, auth, (req, res) => {
@@ -95,54 +118,81 @@ router.delete("/list/:id", tokenValidator, auth, (req, res) => {
   let list_id = req.params.id;
 
   //find list
-  let list = lists.find((list) => String(list.id) === list_id);
+  getList(list_id).then((list) => {
+    if (!list) {
+      return res.status(404).json({ errors: ["List not found"] });
+    }
 
-  if (!list) {
-    return res.status(404).json({ errors: ["List not found"] });
-  }
+    //check if user is owner
+    if (list.owner_id.toString() !== req.user._id) {
+      return res.status(403).json({ errors: ["Forbidden"] });
+    }
 
-  if (list.owner_id !== req.user.id) {
-    return res.status(403).json({ errors: ["Forbidden"] });
-  }
-
-  lists.splice(lists.indexOf(list), 1);
-
-  res.status(200).json({ message: "List deleted" });
+    deleteList(list_id).then((result) => {
+      if (result.deletedCount === 1) {
+        return res.status(200).json({ message: "List deleted" });
+      } else {
+        return res.status(500).json({ errors: ["Internal Server Error"] });
+      }
+    });
+  });
 });
 
 router.put("/list/:id", updateListValidator, auth, (req, res) => {
   const errors = validationResult(req);
   if (errors.isEmpty()) {
     let data = matchedData(req);
+    console.log(data);
 
     let list_id = req.params.id;
-    let list = lists.find((list) => String(list.id) === list_id);
 
-    if (!list) {
-      return res.status(404).json({ errors: ["List not found"] });
-    }
+    getList(list_id).then((list) => {
+      if (!list) {
+        return res.status(404).json({ errors: ["List not found"] });
+      }
 
-    //check if user is owner
-    if (list.owner_id !== req.user.id) {
-      return res.status(403).json({ errors: ["Forbidden"] });
-    }
+      console.log(list, req.user);
 
-    list.name = data.name;
-    list.shared_users = data.shared_users || [];
-    list.items = data.items || [];
-    list.sys.mts = new Date().toISOString();
-    list.sys.rev += 1;
-    list.archived = data.archived || false;
+      if (list.owner_id !== req.user._id) {
+        if (
+          list.shared_users.filter((user) => user.id === req.user._id)
+            .length === 0
+        ) {
+          return res.status(403).json({ errors: ["Forbidden"] });
+        }
+      }
+      let updateData = { $set: {} };
 
-    //TODO update list in db
+      data.name !== undefined ? (updateData.$set.name = data.name) : null;
+      data.shared_users !== undefined
+        ? (updateData.$set.shared_users = data.shared_users)
+        : null;
+      data.item_list !== undefined
+        ? (updateData.$set.item_list = data.item_list)
+        : null;
+      data.archived !== undefined
+        ? (updateData.$set.archived = data.archived)
+        : null;
+      updateData.$set.sys = list.sys;
+      updateData.$set.sys.mts = new Date().toISOString();
+      updateData.$set.sys.ver += 1;
 
-    //update list in lists
-    lists.splice(lists.indexOf(list), 1);
-    lists.push(list);
+      console.log(updateData);
 
-    return res.status(200).json(list);
+      updateList(list_id, updateData).then((result) => {
+        console.log(result);
+        if (result.acknowledged) {
+          getList(list_id).then((list) => {
+            return res.status(200).json(list);
+          });
+        } else {
+          return res.status(500).json({ errors: ["Internal Server Error"] });
+        }
+      });
+    });
+  } else {
+    res.status(400).json({ errors: errors.array() });
   }
-  res.status(400).json({ errors: errors.array() });
 });
 
 module.exports = router;

@@ -6,8 +6,8 @@ var cors = require("cors");
 const swaggerUi = require("swagger-ui-express");
 const swaggerDocument = require("./docs/swagger.json");
 
-const auth = require("./auth.js");
-const list = require("./list.js");
+const auth = require("./endpoints/auth.js");
+const list = require("./endpoints/list.js");
 
 var app = express();
 app.use(express.json());
@@ -33,5 +33,5 @@ var server = app.listen(port, hostname, function () {
   var host = server.address().address;
   var port = server.address().port;
 
-  console.log("Example app listening at http://%s:%s", host, port);
+  console.log("API listening at http://%s:%s", host, port);
 });

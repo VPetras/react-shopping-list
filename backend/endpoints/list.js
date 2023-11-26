@@ -5,9 +5,9 @@ const {
   createListValidator,
   tokenValidator,
   updateListValidator,
-} = require("./validation.js");
+} = require("../validations/lists_validations.js");
 
-const lists = require("./test_data/lists.json");
+const lists = require("../test_data/lists.json");
 
 function withoutProperty(obj, property) {
   const { [property]: unused, ...rest } = obj;

@@ -1,13 +1,12 @@
 const express = require("express");
-//const jwt = require("jsonwebtoken");
-//const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 const router = express.Router();
 const { validationResult, matchedData } = require("express-validator");
-const { loginValidator } = require("./validation.js");
+const { loginValidator } = require("../validations/user_validations.js");
 
-const users = require("./test_data/users.json");
+const users = require("../test_data/users.json");
 
-const jwtSecretKey = process.env.JWT_SECRET_KEY;
+const jwtSecretKey = process.env.JWT_SECRET_KEY || "secret";
 const jwtExpireTime = process.env.JWT_EXPIRE_TIME || "24h";
 
 function withoutProperty(obj, property) {
@@ -16,7 +15,7 @@ function withoutProperty(obj, property) {
   return rest;
 }
 
-router.post("/login", loginValidator, (req, res, next) => {
+router.post("/login", loginValidator, (req, res) => {
   const errors = validationResult(req);
   if (errors.isEmpty()) {
     let data = matchedData(req);
@@ -24,11 +23,17 @@ router.post("/login", loginValidator, (req, res, next) => {
     let user = users.find((user) => user.email === data.email);
     console.log(data);
     console.log(user);
-    if (user) {
+    if (user.length !== 0) {
       //TODO check password via bcrypt
       if (data.password === user.password) {
         //TODO create JWT and send it to user
+        user.token = jwt.sign(
+          { id: user.id, email: user.email },
+          jwtSecretKey,
+          { expiresIn: jwtExpireTime }
+        );
         // for now token will be ID user
+        user.errors = errors.errors;
         return res.status(200).json(withoutProperty(user, "password"));
       }
     }

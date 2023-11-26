@@ -21,8 +21,6 @@ router.post("/login", loginValidator, (req, res) => {
     let data = matchedData(req);
     //TODO check user in DB
     let user = users.find((user) => user.email === data.email);
-    console.log(data);
-    console.log(user);
     if (user.length !== 0) {
       //TODO check password via bcrypt
       if (data.password === user.password) {
@@ -33,13 +31,13 @@ router.post("/login", loginValidator, (req, res) => {
           { expiresIn: jwtExpireTime }
         );
         // for now token will be ID user
-        user.errors = errors.errors;
+        user.errors = errors.array();
         return res.status(200).json(withoutProperty(user, "password"));
       }
     }
     return res.status(401).json({ errors: ["Invalid email or password"] });
   }
-  res.status(422).json({ errors: errors.array() });
+  res.status(400).json({ errors: errors.array() });
 });
 
 // TODO add register route

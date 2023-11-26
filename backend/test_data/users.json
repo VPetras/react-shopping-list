@@ -9,9 +9,7 @@
       "cts": "2017-08-01T00:00:00.000Z",
       "mts": "2017-08-01T00:00:00.000Z",
       "rev": 1
-    },
-    "shopping_lists": [1, 2, 5],
-    "shared_shopping_lists": [4]
+    }
   },
   {
     "id": 2,
@@ -23,8 +21,6 @@
       "cts": "2017-08-01T00:00:00.000Z",
       "mts": "2017-08-01T00:00:00.000Z",
       "rev": 1
-    },
-    "shopping_lists": [3, 4],
-    "shared_shopping_lists": [1, 2]
+    }
   }
 ]

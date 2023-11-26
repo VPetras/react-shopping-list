@@ -1,4 +1,7 @@
 // auth middleware that returns user data if token is valid
+const jwt = require("jsonwebtoken");
+
+const jwtSecretKey = process.env.JWT_SECRET_KEY || "secret";
 
 const auth = (req, res, next) => {
   const token = req.headers.authorization.split(" ")[1];

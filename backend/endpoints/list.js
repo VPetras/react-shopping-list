@@ -8,6 +8,7 @@ const {
 } = require("../validations/lists_validations.js");
 
 const lists = require("../test_data/lists.json");
+const auth = require("../middlewares/auth.js");
 
 function withoutProperty(obj, property) {
   const { [property]: unused, ...rest } = obj;
@@ -15,26 +16,42 @@ function withoutProperty(obj, property) {
   return rest;
 }
 
-router.get("/list/:id", tokenValidator, (req, res, next) => {
+router.get("/lists", tokenValidator, auth, (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return res.status(422).json({ errors: errors.array() });
+    return res.status(400).json({ errors: errors.array() });
   }
 
-  //token is fake, its only for dev purposes and its user id
-  const token = req.headers.authorization.split(" ")[1];
+  let owned_lists = lists.filter((list) => list.owner_id === req.user.id);
+  let shared_lists = lists.filter(
+    (list) =>
+      list.shared_users.filter((user) => user.id === req.user.id).length !== 0
+  );
+
+  res.status(200).json({ owned_lists, shared_lists });
+});
+
+router.get("/list/:id", tokenValidator, auth, (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
   let list_id = req.params.id;
+
+  console.log(req.user);
 
   //check if list exists and belongs to user
   let list = lists.find((list) => String(list.id) === list_id);
+  console.log(list);
 
   if (!list) {
     return res.status(404).json({ errors: ["List not found"] });
   }
 
-  if (String(list.owner_id) !== token) {
+  if (list.owner_id !== req.user.id) {
     if (
-      list.shared_users.filter((user) => String(user.id) === token).length === 0
+      list.shared_users.filter((user) => user.id === req.user.id).length === 0
     ) {
       return res.status(403).json({ errors: ["Forbidden"] });
     }
@@ -43,52 +60,48 @@ router.get("/list/:id", tokenValidator, (req, res, next) => {
   res.status(200).json(list);
 });
 
-router.post("/list/create", createListValidator, (req, res) => {
+router.post("/list/create", createListValidator, auth, (req, res) => {
   const errors = validationResult(req);
   if (errors.isEmpty()) {
     let data = matchedData(req);
 
-    let list = lists.find((list) => list.name === data.name);
-    if (list) {
-      return res.status(422).json({ errors: ["List already exists"] });
-    }
     let new_list = {
       id: lists.length + 1,
-      name: data.name,
-      owner_id: data.authorization.split(" ")[1],
-      shared_users: data.shared_users || [],
-      items: data.items || [],
       sys: {
         cts: new Date().toISOString(),
         mts: new Date().toISOString(),
         ver: 1,
       },
+      name: data.name,
+      owner_id: req.user.id,
+      owner_name: req.user.name,
+      shared: data.shared || false,
+      shared_users: data.shared_users || [],
+      items: data.items || [],
     };
 
     lists.push(new_list);
-    return res.status(200).json(new_list);
+    return res.status(201).json(new_list);
   }
-  res.status(422).json({ errors: errors.array() });
+  res.status(400).json({ errors: errors.array() });
 });
 
-router.delete("/list/:id", tokenValidator, (req, res, next) => {
+router.delete("/list/:id", tokenValidator, auth, (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return res.status(422).json({ errors: errors.array() });
+    return res.status(400).json({ errors: errors.array() });
   }
 
-  //token is fake, its only for dev purposes and its user id
-  const token = req.headers.authorization.split(" ")[1];
   let list_id = req.params.id;
 
-  //check if list exists and belongs to user
+  //find list
   let list = lists.find((list) => String(list.id) === list_id);
 
   if (!list) {
     return res.status(404).json({ errors: ["List not found"] });
   }
 
-  if (String(list.owner_id) !== token) {
+  if (list.owner_id !== req.user.id) {
     return res.status(403).json({ errors: ["Forbidden"] });
   }
 
@@ -97,11 +110,10 @@ router.delete("/list/:id", tokenValidator, (req, res, next) => {
   res.status(200).json({ message: "List deleted" });
 });
 
-router.put("/list/:id", updateListValidator, (req, res) => {
+router.put("/list/:id", updateListValidator, auth, (req, res) => {
   const errors = validationResult(req);
   if (errors.isEmpty()) {
     let data = matchedData(req);
-    console.log(data);
 
     let list_id = req.params.id;
     let list = lists.find((list) => String(list.id) === list_id);
@@ -111,7 +123,7 @@ router.put("/list/:id", updateListValidator, (req, res) => {
     }
 
     //check if user is owner
-    if (String(list.owner_id) !== data.authorization.split(" ")[1]) {
+    if (list.owner_id !== req.user.id) {
       return res.status(403).json({ errors: ["Forbidden"] });
     }
 
@@ -130,7 +142,7 @@ router.put("/list/:id", updateListValidator, (req, res) => {
 
     return res.status(200).json(list);
   }
-  res.status(422).json({ errors: errors.array() });
+  res.status(400).json({ errors: errors.array() });
 });
 
 module.exports = router;

@@ -5,7 +5,7 @@ import { LoginForm } from "../components/forms/loginform";
 class LoginPage extends Component {
   render() {
     return (
-      <div>
+      <div className="container pt-5">
         <LoginForm />
       </div>
     );

@@ -1,25 +1,20 @@
-import React, { useState, useContext } from "react";
-
-import { ShoppingListContext } from "../../context/shoppingListContext";
+import React, { useState } from "react";
 
 const EditList = (props) => {
-  const context = useContext(ShoppingListContext);
-
-  let l = context.lists.filter((list) => list.name === props.id)[0];
-
-  const [list, setList] = useState({
-    id: l.id,
-    owner: l.owner,
-    name: l.name,
-    items: l.items,
-    shared: l.shared,
-    created: l.created,
-    archived: l.archived,
-  });
+  const [list, setList] = useState(props.list);
 
   const handleChange = (e) => {
     e.preventDefault();
-    setList({ ...list, [e.target.id]: e.target.value });
+    const { id, value } = e.target;
+    setList((prevState) => ({
+      ...prevState,
+      [id]: value,
+    }));
+  };
+
+  const handleEdit = (e) => {
+    e.preventDefault();
+    props.handleEdit(list);
   };
 
   return (
@@ -65,11 +60,11 @@ const EditList = (props) => {
             </div>
             <div className="form-outline form-white mb-3">
               <input
-                id="shared"
+                id="shared_users"
                 type="text"
                 className="form-control"
                 placeholder="Shared with"
-                value={list.shared}
+                value={list.shared_users}
                 onChange={handleChange}
               />
             </div>
@@ -84,7 +79,7 @@ const EditList = (props) => {
                 type="button"
                 class="btn btn-warning"
                 data-bs-dismiss="modal"
-                onClick={props.handleEditList}>
+                onClick={handleEdit}>
                 Edit
               </button>
             </div>

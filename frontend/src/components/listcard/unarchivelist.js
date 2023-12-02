@@ -1,33 +1,6 @@
-import React, { useState, useContext } from "react";
-
-import { ShoppingListContext } from "../../context/shoppingListContext";
+import React from "react";
 
 const UnArchiveList = (props) => {
-  const context = useContext(ShoppingListContext);
-
-  const unArchiveList = (e) => {
-    e.preventDefault();
-
-    if (!context.logged) {
-      alert("You must be logged in to unArchive a list.");
-      return;
-    }
-
-    let list = context.lists.filter((list) => list.name === props.id)[0];
-    let user = context.users.filter(
-      (user) => user.nickname === context.user.nickname
-    )[0];
-    user.lists.archived = user.lists.archived.filter(
-      (list) => list !== props.id
-    );
-    user.lists.active.push(props.id);
-    context.setUsers([...context.users, user]);
-
-    list.archived = false;
-
-    context.setLists([...context.lists, list]);
-  };
-
   return (
     <>
       <div className="col-md">
@@ -71,7 +44,7 @@ const UnArchiveList = (props) => {
                 type="button"
                 class="btn btn-warning"
                 data-bs-dismiss="modal"
-                onClick={unArchiveList}>
+                onClick={props.handleUnArchive}>
                 {" "}
                 unArchive
               </button>

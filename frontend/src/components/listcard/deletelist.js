@@ -1,18 +1,6 @@
 import React, { useState, useContext } from "react";
-import { useNavigate } from "react-router-dom";
-
-import { ShoppingListContext } from "../../context/shoppingListContext";
 
 const DeleteList = (props) => {
-  const context = useContext(ShoppingListContext);
-  const navigate = useNavigate();
-
-  const deleteList = () => {
-    let list = context.lists.filter((list) => list.name === props.id)[0];
-    context.setLists(context.lists.filter((list) => list.name !== props.id));
-    navigate("/");
-  };
-
   return (
     <>
       <div className="col-md">
@@ -56,7 +44,7 @@ const DeleteList = (props) => {
                 type="button"
                 class="btn btn-danger"
                 data-bs-dismiss="modal"
-                onClick={deleteList}>
+                onClick={props.handleDelete}>
                 Delete
               </button>
             </div>

@@ -1,28 +1,16 @@
-import React, { useContext, useEffect } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import React, { useContext } from "react";
+import { Link } from "react-router-dom";
 
 import { ShoppingListContext } from "../../context/shoppingListContext";
 
 const NavBar = () => {
   const context = useContext(ShoppingListContext);
-  const navigate = useNavigate();
 
   const logout = (event) => {
     event.preventDefault();
-
     context.setLogged(false);
     context.setUser({});
   };
-
-  const login = (nickname) => (event) => {
-    event.preventDefault();
-    context.setLogged(true);
-    context.setUser({ nickname: nickname });
-  };
-
-  console.log(context);
-
-  console.log("logged: ", context.logged);
 
   return (
     <>
@@ -59,7 +47,6 @@ const NavBar = () => {
               )*/}
             </ul>
           </div>
-
           {context.logged ? (
             <>
               <ul className="navbar-nav">
@@ -90,38 +77,9 @@ const NavBar = () => {
               </ul>
             </>
           ) : (
-            <>
-              <ul className="navbar-nav">
-                <li className="nav-item dropdown">
-                  <a
-                    href="#"
-                    className="nav-link dropdown-toggle"
-                    role="button"
-                    data-bs-toggle="dropdown"
-                    aria-expanded="false">
-                    Log in
-                  </a>
-                  <ul
-                    className="dropdown-menu dropdown-menu-dark"
-                    aria-labelledby="navbarDarkDropdownMenuLink">
-                    <>
-                      {context.users.map((user) => (
-                        <>
-                          {console.log(user)}
-                          <li>
-                            <a
-                              className="dropdown-item"
-                              onClick={login(user.nickname)}>
-                              {user.nickname}
-                            </a>
-                          </li>
-                        </>
-                      ))}
-                    </>
-                  </ul>
-                </li>
-              </ul>
-            </>
+            <Link to="/login" className="btn btn-outline-light">
+              Login
+            </Link>
           )}
         </div>
       </nav>

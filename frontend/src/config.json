@@ -1,0 +1,5 @@
+{
+  "production": false,
+  "mock_data": true,
+  "api_url": "http://localhost:3050/"
+}

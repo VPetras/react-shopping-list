@@ -1,32 +1,6 @@
-import React, { useState, useContext } from "react";
-
-import { ShoppingListContext } from "../../context/shoppingListContext";
+import React from "react";
 
 const ArchiveList = (props) => {
-  const context = useContext(ShoppingListContext);
-
-  const archiveList = (e) => {
-    e.preventDefault();
-
-    if (!context.logged) {
-      alert("You must be logged in to archive a list.");
-      return;
-    }
-
-    let list = context.lists.filter((list) => list.name === props.id)[0];
-    let user = context.users.filter(
-      (user) => user.nickname === context.user.nickname
-    )[0];
-
-    user.lists.active = user.lists.active.filter((list) => list !== props.id);
-    user.lists.archived.push(props.id);
-    context.setUsers([...context.users, user]);
-
-    list.archived = true;
-
-    context.setLists([...context.lists, list]);
-  };
-
   return (
     <>
       <div className="col-md">
@@ -70,7 +44,7 @@ const ArchiveList = (props) => {
                 type="button"
                 class="btn btn-warning"
                 data-bs-dismiss="modal"
-                onClick={archiveList}>
+                onClick={props.handleArchive}>
                 {" "}
                 Archive
               </button>

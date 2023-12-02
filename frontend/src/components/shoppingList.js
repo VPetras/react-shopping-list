@@ -1,51 +1,66 @@
-import React, { useState, useContext, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useContext, useEffect } from "react";
 import { ShoppingListContext } from "../context/shoppingListContext";
 import ListCard from "./listcard/listcard";
 import AddList from "./listcard/addlist";
+import { addListFetch, getListsFetch } from "../fetch/listFetches";
 
 const ShoppingListList = (props) => {
   const context = useContext(ShoppingListContext);
-  const navigate = useNavigate();
 
-  const handleAdd = (e) => {
-    e.preventDefault();
+  const handleAdd = (list) => {
+    addListFetch(list, context.user).then((list) => {
+      context.setLists((prevState) => ({
+        ...prevState,
+        active_lists: [...prevState.active_lists, list],
+      }));
+    });
+    console.log("add list");
   };
+
+  useEffect(() => {
+    getListsFetch(context.user)
+      .then((lists) => {
+        context.setLists(lists);
+      })
+      .catch((error) => console.log(error));
+  }, [context]);
 
   const showLists = () => {
     if (context.logged) {
       let userLists = [];
-      if (context.visualList === "active") {
-        userLists = context.lists.filter(
-          (list) => list.owner === context.user.nickname
-        );
-      } else if (context.visualList === "shared") {
-        let user_shared_lists = context.users.filter(
-          (user) => user.nickname === context.user.nickname
-        );
-        userLists = context.lists.filter((list) =>
-          user_shared_lists[0].lists.shared.includes(list.name)
-        );
-      } else if (context.visualList === "archived") {
-        let user_archived_lists = context.users.filter(
-          (user) => user.nickname === context.user.nickname
-        );
-        userLists = context.lists.filter((list) =>
-          user_archived_lists[0].lists.archived.includes(list.name)
-        );
-      }
 
-      return userLists.map((list) => (
-        <ListCard
-          key={list._id}
-          name={list.name}
-          owner={list.owner}
-          created={list.created}
-          status={`${list.items.filter((i) => i.checked === true).length}/${
-            list.items.length
-          }`}
-        />
-      ));
+      if (context.visualList === "active") {
+        userLists = context.lists.active_lists;
+      } else if (context.visualList === "shared") {
+        userLists = context.lists.shared_lists;
+      } else {
+        userLists = context.lists.archived_lists;
+      }
+      console.log(context.lists);
+      if (userLists === undefined) {
+        //return loading spinner
+        return (
+          <div>
+            Loading...
+            <span
+              className="spinner-border spinner-border-sm"
+              role="status"
+              aria-hidden="true"></span>
+          </div>
+        );
+      } else {
+        return userLists.map((list) => (
+          <ListCard
+            id={list._id}
+            key={list._id}
+            name={list.name}
+            owner={list.owner_name}
+            status={`${
+              list.item_list.filter((i) => i.checked === true).length
+            }/${list.item_list.length}`}
+          />
+        ));
+      }
     } else {
       return <p>You must be logged in to see your lists.</p>;
     }

@@ -1,10 +1,6 @@
-import React, { useState, useContext } from "react";
-
-import { ShoppingListContext } from "../../context/shoppingListContext";
+import React, { useState } from "react";
 
 const AddItem = (props) => {
-  const context = useContext(ShoppingListContext);
-
   const [item, setItem] = useState({
     name: "",
     quantity: "",
@@ -18,20 +14,7 @@ const AddItem = (props) => {
 
   const addItem = (e) => {
     e.preventDefault();
-    let list = context.lists.filter((list) => list.name === props.id)[0];
-    let newId = 0;
-    if (list.items.length > 0) {
-      newId = list.items[list.items.length - 1].id + 1;
-    }
-    let newItem = {
-      id: newId,
-      name: item.name,
-      quantity: item.quantity,
-      checked: false,
-    };
-
-    list.items.push(newItem);
-    context.setLists([...context.lists, list]);
+    props.handleAddItem(item);
     setItem({
       name: "",
       quantity: "",

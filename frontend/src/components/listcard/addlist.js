@@ -22,29 +22,17 @@ const AddList = (props) => {
       return;
     }
 
-    let newId = 0;
-    if (context.lists.length > 0) {
-      newId = context.lists[context.lists.length - 1].id + 1;
-    }
-
     let newList = {
-      id: newId,
-      owner: context.user.nickname,
       name: list.name,
-      items: [],
-      created: new Date().toISOString,
+      item_list: [],
+      created: new Date().toISOString(),
     };
 
-    let user = context.users.filter(
-      (user) => user.nickname === context.user.nickname
-    )[0];
-    user.lists.active.push(newList.name);
-    context.setUsers([...context.users, user]);
-
-    context.setLists([...context.lists, newList]);
     setList({
       name: "",
     });
+
+    props.handleAdd(newList);
   };
 
   return (

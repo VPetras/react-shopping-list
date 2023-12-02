@@ -1,59 +1,36 @@
-import React, { useState, useContext } from "react";
-import { ShoppingListContext } from "../../context/shoppingListContext";
+import React, { useState, useEffect } from "react";
+
 import DeleteItem from "./deleteitem";
 import EditItem from "./edititem";
 
 const ItemList = (props) => {
-  const context = useContext(ShoppingListContext);
+  console.log("ItemList", props.items);
 
-  const [item, setItem] = useState({
-    name: "",
-    quantity: "",
-    checked: false,
-  });
+  const [items, setItems] = useState(props.items);
+
+  useEffect(() => {
+    setItems(props.items);
+  }, [props.items]);
 
   const handleDelete = (item) => {
-    let list = context.lists.filter((list) => list.name === props.id)[0];
-    console.log("list", list);
-    list.items = list.items.filter((i) => i.id !== item.id);
-    console.log("list", list);
-
-    context.setLists([...context.lists, list]);
+    props.handleDeleteItem(item);
   };
 
   const handleEdit = (item) => {
-    let list = context.lists.filter((list) => list.name === props.id)[0];
-    list.items.forEach((i) => {
-      if (i.id === item.id) {
-        list.items[list.items.indexOf(i)] = item;
-      }
-    });
-
-    context.setLists([...context.lists, list]);
+    props.handleEditItem(item);
   };
 
-  const checkItem = (itemName) => {
-    let list = context.lists.filter((list) => list.name === props.id)[0];
-    console.log(list);
-
-    list.items.forEach((item) => {
-      if (item.name === itemName) {
-        item.checked = !item.checked;
-      }
-    });
-
-    context.setLists([...context.lists, list]);
+  const checkItem = (item) => {
+    props.handleCheckItem(item);
   };
 
   const showItems = () => {
-    const items = context.lists.filter((list) => list.name === props.id)[0]
-      .items;
-
     return (
       <table class="table">
         <thead>
           <tr>
             <th scope="col">#</th>
+            <th scope="col">id</th>
             <th scope="col">Item</th>
             <th scope="col">Quantity</th>
             <th scope="col">Bought</th>
@@ -69,10 +46,11 @@ const ItemList = (props) => {
                   type="checkbox"
                   checked={item.checked}
                   onChange={() => {
-                    checkItem(item.name);
+                    checkItem(item);
                   }}
                 />
               </th>
+              <th scope="row">{item.id}</th>
               <td>{item.name}</td>
               <td>{item.quantity}</td>
               <td>{item.checked ? "Yes" : "No"}</td>
@@ -92,8 +70,20 @@ const ItemList = (props) => {
       </table>
     );
   };
-
-  return <>{showItems()}</>;
+  if (props.items === undefined) {
+    //return loading spinner
+    return (
+      <div>
+        Loading...
+        <span
+          className="spinner-border spinner-border-sm"
+          role="status"
+          aria-hidden="true"></span>
+      </div>
+    );
+  } else {
+    return <>{showItems()}</>;
+  }
 };
 
 export default ItemList;

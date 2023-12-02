@@ -1,0 +1,143 @@
+[
+  {
+    "_id": "656365a46c49a5c73cb7951c",
+    "sys": {
+      "cts": "2023-11-26T15:35:00.021Z",
+      "mts": "2023-11-26T16:04:55.605Z",
+      "ver": 17
+    },
+    "name": "Kaufland",
+    "owner_id": "65634ba0c26ac98e6d48addb",
+    "owner_name": "VPetras",
+    "archived": false,
+    "shared_users": [
+      {
+        "id": "65634ce1518af453cb3014ac",
+        "nickname": "Sonic"
+      }
+    ],
+    "item_list": [
+      {
+        "id": 1,
+        "name": "test-scvdafitem-1",
+        "quantity": 10,
+        "unit": "pcs",
+        "checked": false
+      },
+      {
+        "id": 2,
+        "name": "test-asdf-2",
+        "quantity": 20,
+        "unit": "pcs",
+        "checked": false
+      }
+    ]
+  },
+  {
+    "_id": "65636a453ed9d37c53b1561b",
+    "sys": {
+      "cts": "2023-11-26T15:54:45.129Z",
+      "mts": "2023-11-26T16:11:48.985Z",
+      "ver": 1
+    },
+    "name": "Kaufland",
+    "owner_id": "65634ba0c26ac98e6d48addb",
+    "owner_name": "VPetras",
+    "archived": true,
+    "shared_users": [],
+    "item_list": [
+      {
+        "id": 1,
+        "name": "Čokokláda",
+        "quantity": 1,
+        "unit": "pcs",
+        "checked": false
+      },
+      {
+        "id": 2,
+        "name": "Banány",
+        "quantity": 5,
+        "unit": "pcs",
+        "checked": false
+      }
+    ]
+  },
+  {
+    "_id": "65636a673ed9d37c53b1561c",
+    "sys": {
+      "cts": "2023-11-26T15:55:19.809Z",
+      "mts": "2023-11-26T15:55:19.809Z",
+      "ver": 0
+    },
+    "name": "Lidl",
+    "owner_id": "65634ba0c26ac98e6d48addb",
+    "owner_name": "VPetras",
+    "archived": false,
+    "shared_users": [],
+    "item_list": [
+      {
+        "id": 1,
+        "name": "Vrtačka",
+        "quantity": 1,
+        "unit": "pcs",
+        "checked": false
+      },
+      {
+        "id": 2,
+        "name": "Jogurty",
+        "quantity": 2,
+        "unit": "pcs",
+        "checked": false
+      }
+    ]
+  },
+  {
+    "_id": "65636a933ed9d37c53b1561d",
+    "sys": {
+      "cts": "2023-11-26T15:56:03.650Z",
+      "mts": "2023-11-26T15:56:03.650Z",
+      "ver": 0
+    },
+    "name": "Billa",
+    "owner_id": "65634ce1518af453cb3014ac",
+    "owner_name": "Sonic",
+    "archived": false,
+    "shared_users": [],
+    "item_list": [
+      {
+        "id": 1,
+        "name": "Cukroví",
+        "quantity": 1,
+        "unit": "balení",
+        "checked": false
+      }
+    ]
+  },
+  {
+    "_id": "65636ab63ed9d37c53b1561e",
+    "sys": {
+      "cts": "2023-11-26T15:56:38.928Z",
+      "mts": "2023-11-26T15:56:38.928Z",
+      "ver": 0
+    },
+    "name": "Železářství",
+    "owner_id": "65634ce1518af453cb3014ac",
+    "owner_name": "Sonic",
+    "archived": false,
+    "shared_users": [
+      {
+        "id": "65634ba0c26ac98e6d48addb",
+        "nickname": "VPetras"
+      }
+    ],
+    "item_list": [
+      {
+        "id": 1,
+        "name": "Bublinka do vodováhy",
+        "quantity": 1,
+        "unit": "pcs",
+        "checked": false
+      }
+    ]
+  }
+]

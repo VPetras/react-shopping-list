@@ -1,22 +1,23 @@
 import React, { useContext, useEffect } from "react";
-import { useNavigate, Link, useParams } from "react-router-dom";
 
 import { ShoppingListContext } from "../context/shoppingListContext";
 import ShoppingListList from "../components/shoppingList";
+import { getListsFetch } from "../fetch/listFetches";
 
 const Home = (props) => {
   const context = useContext(ShoppingListContext);
-  let { id } = useParams();
 
   useEffect(() => {
-    if (id === "shared") {
-      context.setVisualList("shared");
-    } else if (id === "archived") {
-      context.setVisualList("archived");
-    } else {
-      context.setVisualList("active");
+    if (context.logged) {
+      getListsFetch(context.user)
+        .then((lists) => {
+          context.setLists(lists);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     }
-  }, []);
+  }, [context.logged]);
 
   const setVisual = (visual) => {
     context.setVisualList(visual);

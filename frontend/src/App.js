@@ -13,6 +13,7 @@ import RegisterPage from "./pages/register";
 import LoginPage from "./pages/login";
 import NavBar from "./components/navbar/navbar";
 import Footer from "./components/footer/footer";
+import NotFoundPage from "./pages/404";
 
 function List() {
   let { id } = useParams();
@@ -32,7 +33,7 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/docs" element={<h1>Docs</h1>} />
-          <Route path="*" element={<h1>404</h1>} />
+          <Route path="*" element={<NotFoundPage />} />
         </Routes>
         <Footer />
       </Router>

@@ -1,0 +1,40 @@
+[
+  {
+    "_id": "65634ba0c26ac98e6d48addb",
+    "name": "Vojtěch",
+    "surname": "Petrásek",
+    "nickname": "VPetras",
+    "email": "vojtechpetrasek@gmail.com",
+    "password": "testtest",
+    "sys": {
+      "cts": {
+        "$date": "2023-11-26T13:44:00.473Z"
+      },
+      "mts": {
+        "$date": "2023-11-26T13:44:00.473Z"
+      },
+      "rev": 0
+    },
+    "shoping_lists": [],
+    "shared_shopping_lists": []
+  },
+  {
+    "_id": "65634ce1518af453cb3014ac",
+    "name": "Vojtěch",
+    "surname": "Petrásek",
+    "nickname": "Sonic",
+    "email": "vojtech.petrasek@gmail.com",
+    "password": "testtest",
+    "sys": {
+      "cts": {
+        "$date": "2023-11-26T13:49:21.028Z"
+      },
+      "mts": {
+        "$date": "2023-11-26T13:49:21.028Z"
+      },
+      "rev": 0
+    },
+    "shoping_lists": [],
+    "shared_shopping_lists": []
+  }
+]

@@ -1,6 +1,7 @@
 import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { ShoppingListContext } from "../../context/shoppingListContext";
+import { loginFetch } from "../../fetch/userFetches";
 
 export const LoginForm = () => {
   const context = useContext(ShoppingListContext);
@@ -41,36 +42,22 @@ export const LoginForm = () => {
   };
 
   const postLogin = () => {
-    fetch("https://api.uu.vojtechpetrasek.com/v4/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        email: email.value,
-        password: password.value,
-      }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.success === true) {
-          localStorage.setItem("token", data.token);
-          setSubmitting(false);
-          context.setLogged(true);
-          context.setToken(data.token);
-          context.setUser(data.user);
-          console.log(data);
-          navigate("/");
-        } else if (data.message === "User not exist") {
-          setSubmitting(false);
+    loginFetch(email.value, password.value, context)
+      .then((user) => {
+        console.log("User authenticated:", user);
+        context.setLogged(true);
+        context.setUser(user);
+        navigate("/");
+        setSubmitting(false);
+      })
+      .catch((error) => {
+        if (error === "User not exist") {
           setEmail({
             ...email,
             valid: false,
             touched: true,
             errMsg: "User not found",
           });
-        } else if (data.message === "Wrong password") {
-          setSubmitting(false);
           setPassword({
             ...password,
             valid: false,
@@ -78,6 +65,15 @@ export const LoginForm = () => {
             errMsg: "Wrong password",
           });
         }
+        if (error === "Wrong password") {
+          setPassword({
+            ...password,
+            valid: false,
+            touched: true,
+            errMsg: "Wrong password",
+          });
+        }
+        setSubmitting(false);
       });
   };
 
@@ -125,9 +121,7 @@ export const LoginForm = () => {
 
   return (
     <div>
-      <div
-        className="d-flex align-items-center justify-content-center"
-        style={{ height: "80vh" }}>
+      <div className="d-flex justify-content-center" style={{ height: "70vh" }}>
         <div
           className="card bg-dark text-white"
           style={{ borderRadius: "1rem" }}>
@@ -207,10 +201,15 @@ export const LoginForm = () => {
                 }
                 type="submit"
                 onClick={login}>
-                Login
+                {submitting ? (
+                  <span
+                    className="spinner-border spinner-border-sm"
+                    role="status"
+                    aria-hidden="true"></span>
+                ) : (
+                  "Login"
+                )}
               </button>
-            </div>
-            <div>
               <p className="mb-0">
                 Don't have an account?{" "}
                 <a href="/register" className="text-white-50 fw-bold">

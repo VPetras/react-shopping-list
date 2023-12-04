@@ -29,9 +29,15 @@ app.get("/", (req, res) => {
 const hostname = "0.0.0.0";
 const port = process.env.PORT || 5001;
 
-var server = app.listen(port, hostname, function () {
-  var host = server.address().address;
-  var port = server.address().port;
+if (require.main === module) {
+  // running as main
+  var server = app.listen(port, hostname, function () {
+    var host = server.address().address;
+    var port = server.address().port;
 
-  console.log("API listening at http://%s:%s", host, port);
-});
+    console.log("API listening at http://%s:%s", host, port);
+  });
+} else {
+  // imported as modul
+  module.exports = app;
+}

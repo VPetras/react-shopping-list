@@ -1,22 +1,10 @@
 const { MongoClient, ObjectId } = require("mongodb");
 const dotenv = require("dotenv");
+dotenv.config();
 
-const config = require("../config.json");
-dotenv.config((path = "../.env"));
-
-let mongoUrl = "mongodb://localhost:27017";
-let mongoDbName = "ShoppingList";
-let mongoCollectionName = "Users";
-
-if (config.production) {
-  mongoUrl = process.env.MONGO_PROD_URI;
-  mongoDbName = process.env.MONGO_PROD_DB;
-  mongoCollectionName = process.env.MONGO_PROD_USERS_COLLECTION;
-} else {
-  mongoUrl = process.env.MONGO_DEV_URI;
-  mongoDbName = process.env.MONGO_DEV_DB;
-  mongoCollectionName = process.env.MONGO_DEV_USERS_COLLECTION;
-}
+const mongoUrl = process.env.MONGO_URI;
+const mongoDbName = process.env.MONGO_DB;
+const mongoCollectionName = process.env.MONGO_USERS_COLLECTION;
 
 const client = new MongoClient(mongoUrl);
 

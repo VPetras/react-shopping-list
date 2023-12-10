@@ -7,6 +7,7 @@ const {
   registerValidator,
 } = require("../validations/user_validations.js");
 
+const auth = require("../middlewares/auth.js");
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
 const { getUserByEmail, createUser } = require("../db/users.js");
@@ -22,6 +23,10 @@ function withoutProperty(obj, property) {
 
   return rest;
 }
+
+router.get("/user", auth, (req, res) => {
+  res.status(200).json(req.user);
+});
 
 router.post("/login", loginValidator, (req, res) => {
   const errors = validationResult(req);

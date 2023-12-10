@@ -2,7 +2,7 @@ const config = require("../config");
 
 let lists = require("./mock_data/ShoppingList.Lists.json");
 
-async function getListsFetch(user) {
+export async function getListsFetch(user) {
   console.log("getListsFetch", config.mock_data);
   if (config.mock_data) {
     // for mocking token is user id
@@ -49,7 +49,7 @@ async function getListsFetch(user) {
   }
 }
 
-async function getListFetch(listId, user) {
+export async function getListFetch(listId, user) {
   console.log("getListFetch", config.mock_data);
   if (config.mock_data) {
     return new Promise((resolve, reject) => {
@@ -90,7 +90,7 @@ async function getListFetch(listId, user) {
   }
 }
 
-async function addListFetch(list, user) {
+export async function addListFetch(list, user) {
   if (config.mock_data) {
     return new Promise((resolve, reject) => {
       console.log("debug", user);
@@ -126,7 +126,7 @@ async function addListFetch(list, user) {
   }
 }
 
-async function editListFetch(list, user) {
+export async function editListFetch(list, user) {
   if (config.mock_data) {
     return new Promise((resolve, reject) => {
       setTimeout(() => {
@@ -158,7 +158,7 @@ async function editListFetch(list, user) {
   }
 }
 
-async function deleteListFetch(listId, user) {
+export async function deleteListFetch(listId, user) {
   if (config.mock_data) {
     return new Promise((resolve, reject) => {
       setTimeout(() => {
@@ -188,11 +188,3 @@ async function deleteListFetch(listId, user) {
       });
   }
 }
-
-module.exports = {
-  getListsFetch,
-  getListFetch,
-  editListFetch,
-  deleteListFetch,
-  addListFetch,
-};

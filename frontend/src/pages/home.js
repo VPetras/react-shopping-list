@@ -58,14 +58,20 @@ const Home = (props) => {
               <div className="col-md-6">
                 <h1 className="display-4 mt-5">Shopping List</h1>
                 <p className="lead">
-                  Shopping List is a simple application for managing your
-                  shopping lists.
+                  {context.language === "en"
+                    ? "Shopping List is a simple application for managing your shopping lists."
+                    : "Shopping List je jednoduchá aplikace pro správu vašich nákupních seznamů."}
                 </p>
                 <p className="lead">
-                  You can create your own lists, share them with your friends,
-                  and more!
+                  {context.language === "en"
+                    ? "You can create your own lists, share them with your friends, and more!"
+                    : "Můžete si vytvořit vlastní seznamy, sdílet je s přáteli a mnohem více!"}
                 </p>
-                <a>Please log in</a>
+                <a>
+                  {context.language === "en"
+                    ? "Please Log in!"
+                    : "Prosím Přihlaste se!"}
+                </a>
               </div>
             </div>
           </div>

@@ -9,6 +9,12 @@ export const ShoppingListProvider = (props) => {
   const [token, setToken] = useState(null);
   const [users, setUsers] = useState([]);
   const [lists, setLists] = useState([]);
+  const [theme, setTheme] = useState("light");
+  const [language, setLanguage] = useState("en");
+  const languages = [
+    { code: "en", name: "English" },
+    { code: "cs", name: "Čeština" },
+  ];
 
   return (
     <ShoppingListContext.Provider
@@ -25,6 +31,11 @@ export const ShoppingListProvider = (props) => {
         setLogged,
         visualList,
         setVisualList,
+        theme,
+        setTheme,
+        language,
+        setLanguage,
+        languages,
       }}>
       {props.children}
     </ShoppingListContext.Provider>

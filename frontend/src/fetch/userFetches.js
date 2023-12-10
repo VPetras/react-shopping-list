@@ -2,7 +2,7 @@ const config = require("../config");
 
 let users = require("./mock_data/ShoppingList.Users.json");
 
-async function loginFetch(email, password) {
+export async function loginFetch(email, password) {
   console.log("loginFetch", config.mock_data);
   if (config.mock_data) {
     return new Promise((resolve, reject) => {
@@ -38,5 +38,3 @@ async function loginFetch(email, password) {
       });
   }
 }
-
-module.exports = { loginFetch };

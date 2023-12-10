@@ -20,17 +20,7 @@ const {
 
 const auth = require("../middlewares/auth.js");
 
-function withoutProperty(obj, property) {
-  const { [property]: unused, ...rest } = obj;
-
-  return rest;
-}
-
-router.get("/lists", tokenValidator, auth, (req, res) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
-  }
+router.get("/lists", auth, (req, res) => {
   getActiveLists(req.user._id).then((active_lists) => {
     getArchivedLists(req.user._id).then((archived_lists) => {
       getSharedLists(req.user._id).then((shared_lists) => {
@@ -45,23 +35,14 @@ router.get("/lists", tokenValidator, auth, (req, res) => {
   });
 });
 
-router.get("/list/:id", tokenValidator, auth, (req, res) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
-  }
-
+router.get("/list/:id", auth, (req, res) => {
   let list_id = req.params.id;
-
-  console.log(req.user);
 
   //check if list exists and belongs to user
   getList(list_id).then((list) => {
     if (!list) {
       return res.status(404).json({ errors: ["List not found"] });
     }
-
-    console.log(list);
 
     if (list.owner_id !== req.user._id) {
       if (
@@ -109,12 +90,7 @@ router.post("/list/create", createListValidator, auth, (req, res) => {
   }
 });
 
-router.delete("/list/:id", tokenValidator, auth, (req, res) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
-  }
-
+router.delete("/list/:id", auth, (req, res) => {
   let list_id = req.params.id;
 
   //find list
@@ -130,7 +106,7 @@ router.delete("/list/:id", tokenValidator, auth, (req, res) => {
 
     deleteList(list_id).then((result) => {
       if (result.deletedCount === 1) {
-        return res.status(200).json({ message: "List deleted" });
+        return res.status(200).json({ deletedCount: result.deletedCount });
       } else {
         return res.status(500).json({ errors: ["Internal Server Error"] });
       }
@@ -142,7 +118,6 @@ router.put("/list/:id", updateListValidator, auth, (req, res) => {
   const errors = validationResult(req);
   if (errors.isEmpty()) {
     let data = matchedData(req);
-    console.log(data);
 
     let list_id = req.params.id;
 
@@ -150,8 +125,6 @@ router.put("/list/:id", updateListValidator, auth, (req, res) => {
       if (!list) {
         return res.status(404).json({ errors: ["List not found"] });
       }
-
-      console.log(list, req.user);
 
       if (list.owner_id !== req.user._id) {
         if (
@@ -177,10 +150,7 @@ router.put("/list/:id", updateListValidator, auth, (req, res) => {
       updateData.$set.sys.mts = new Date().toISOString();
       updateData.$set.sys.ver += 1;
 
-      console.log(updateData);
-
       updateList(list_id, updateData).then((result) => {
-        console.log(result);
         if (result.acknowledged) {
           getList(list_id).then((list) => {
             return res.status(200).json(list);

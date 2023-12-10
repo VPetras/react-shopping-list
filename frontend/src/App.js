@@ -15,6 +15,8 @@ import NavBar from "./components/navbar/navbar";
 import Footer from "./components/footer/footer";
 import NotFoundPage from "./pages/404";
 
+import "./App.css";
+
 function List() {
   let { id } = useParams();
   return <ShoppingList id={id} />;

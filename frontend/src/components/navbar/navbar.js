@@ -15,6 +15,7 @@ const NavBar = () => {
         setLight();
       }
     }
+    // eslint-disable-next-line
   }, []);
 
   const logout = (event) => {

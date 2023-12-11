@@ -1,6 +1,9 @@
-import React from "react";
+import React, { useContext } from "react";
+
+import { ShoppingListContext } from "../../context/shoppingListContext";
 
 const DeleteItem = (props) => {
+  const context = useContext(ShoppingListContext);
   const deleteItem = (e) => {
     e.preventDefault();
     console.log("delete item", props.item);
@@ -14,7 +17,7 @@ const DeleteItem = (props) => {
         class="btn btn-danger"
         data-bs-toggle="modal"
         data-bs-target={"#deleteItemModal" + props.item.id}>
-        Delete item
+        {context.language === "en" ? "Delete" : "Odebrat"}
       </button>
 
       <div
@@ -22,12 +25,13 @@ const DeleteItem = (props) => {
         id={"deleteItemModal" + props.item.id}
         tabindex="-1"
         aria-labelledby="deleteItemModalLabel"
-        aria-hidden="true">
+        aria-hidden="true"
+        data-bs-theme={context.theme}>
         <div class="modal-dialog">
-          <div class="modal-content bg-dark text-white">
+          <div class="modal-content">
             <div class="modal-header">
               <h5 class="modal-title" id="deleteItemModalLabel">
-                Delete item
+                {context.language === "en" ? "Delete item" : "Odebrat položku"}
               </h5>
               <button
                 type="button"
@@ -35,21 +39,26 @@ const DeleteItem = (props) => {
                 data-bs-dismiss="modal"
                 aria-label="Close"></button>
             </div>
-            <div class="modal-body bg-dark text-white"></div>
-            <p>Are you sure you want to delete this item?</p>
+            <div class="modal-body">
+              <p>
+                {context.language === "en"
+                  ? "Are you sure you want to delete this item?"
+                  : "Opravdu chcete odebrat tuto položku?"}
+              </p>
+            </div>
             <div class="modal-footer">
               <button
                 type="button"
                 class="btn btn-secondary"
                 data-bs-dismiss="modal">
-                Close
+                {context.language === "en" ? "Close" : "Zavřít"}
               </button>
               <button
                 type="button"
                 class="btn btn-danger"
                 data-bs-dismiss="modal"
                 onClick={deleteItem}>
-                Delete
+                {context.language === "en" ? "Delete" : "Odebrat"}
               </button>
             </div>
           </div>

@@ -1,6 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
+
+import { ShoppingListContext } from "../../context/shoppingListContext";
 
 const AddItem = (props) => {
+  const context = useContext(ShoppingListContext);
   const [item, setItem] = useState({
     name: "",
     quantity: "",
@@ -18,6 +21,7 @@ const AddItem = (props) => {
     setItem({
       name: "",
       quantity: "",
+      unit: "",
       checked: false,
     });
   };
@@ -29,7 +33,7 @@ const AddItem = (props) => {
         class="btn btn-primary"
         data-bs-toggle="modal"
         data-bs-target="#addItemModal">
-        Add item
+        {context.language === "en" ? "Add item" : "Přidat položku"}
       </button>
 
       <div
@@ -37,12 +41,13 @@ const AddItem = (props) => {
         id="addItemModal"
         tabindex="-1"
         aria-labelledby="addItemModalLabel"
-        aria-hidden="true">
+        aria-hidden="true"
+        data-bs-theme={context.theme}>
         <div class="modal-dialog">
-          <div class="modal-content bg-dark text-white">
+          <div class="modal-content">
             <div class="modal-header">
               <h5 class="modal-title" id="addItemModalLabel">
-                Add item
+                {context.language === "en" ? "Add item" : "Přidat položku"}
               </h5>
               <button
                 type="button"
@@ -50,24 +55,43 @@ const AddItem = (props) => {
                 data-bs-dismiss="modal"
                 aria-label="Close"></button>
             </div>
-            <div class="modal-body bg-dark text-white">
-              <div className="form-outline form-white mb-3">
+            <div class="modal-body">
+              <div className="form-outline mb-3">
+                <label for="name" className="form-label">
+                  {context.language === "en" ? "Item name" : "Název položky"}
+                </label>
                 <input
                   id="name"
                   type="text"
-                  className="form-control"
+                  className="form-control text-dark"
                   placeholder="Item name"
                   value={item.name}
                   onChange={handleChange}
                 />
               </div>
-              <div className="form-outline form-white mb-3">
+              <div className="form-outline mb-3">
+                <label for="quantity" className="form-label">
+                  {context.language === "en" ? "Quantity" : "Množství"}
+                </label>
                 <input
                   id="quantity"
                   type="text"
-                  className="form-control"
+                  className="form-control text-dark"
                   placeholder="Quantity"
                   value={item.quantity}
+                  onChange={handleChange}
+                />
+              </div>
+              <div className="form-outline mb-3">
+                <label for="unit" className="form-label">
+                  {context.language === "en" ? "Unit" : "Jednotky"}
+                </label>
+                <input
+                  id="unit"
+                  type="text"
+                  className="form-control text-dark"
+                  placeholder="Unit"
+                  value={item.unit}
                   onChange={handleChange}
                 />
               </div>
@@ -77,14 +101,14 @@ const AddItem = (props) => {
                 type="button"
                 class="btn btn-secondary"
                 data-bs-dismiss="modal">
-                Close
+                {context.language === "en" ? "Close" : "Zavřít"}
               </button>
               <button
                 type="button"
                 class="btn btn-primary"
                 data-bs-dismiss="modal"
                 onClick={addItem}>
-                Add
+                {context.language === "en" ? "Add item" : "Přidat položku"}
               </button>
             </div>
           </div>

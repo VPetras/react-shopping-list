@@ -70,7 +70,27 @@ const ShoppingListList = (props) => {
     <>
       <div className="container pb-5">
         <div>
-          <h1>Your {context.visualList} shopping list</h1>
+          {context.visualList === "active" && (
+            <h1>
+              {context.language === "en"
+                ? "Your active shoping lists"
+                : "Aktivní nákupní seznamy"}
+            </h1>
+          )}
+          {context.visualList === "shared" && (
+            <h1>
+              {context.language === "en"
+                ? "Your shared shoping lists"
+                : "Sdílené nákupní seznamy"}
+            </h1>
+          )}
+          {context.visualList === "archived" && (
+            <h1>
+              {context.language === "en"
+                ? "Your archived shoping lists"
+                : "Archivované nákupní seznamy"}
+            </h1>
+          )}
         </div>
         {context.visualList === "active" && (
           <div className="row pb-5">{<AddList handleAdd={handleAdd} />}</div>

@@ -19,14 +19,14 @@
     "item_list": [
       {
         "id": 1,
-        "name": "test-scvdafitem-1",
+        "name": "test-item-1",
         "quantity": 10,
         "unit": "pcs",
         "checked": false
       },
       {
         "id": 2,
-        "name": "test-asdf-2",
+        "name": "test-item-2",
         "quantity": 20,
         "unit": "pcs",
         "checked": false

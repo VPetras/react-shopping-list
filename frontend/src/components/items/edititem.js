@@ -1,10 +1,14 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
+
+import { ShoppingListContext } from "../../context/shoppingListContext";
 
 const EditItem = (props) => {
+  const context = useContext(ShoppingListContext);
   const [item, setItem] = useState({
     id: props.item.id,
     name: props.item.name,
     quantity: props.item.quantity,
+    unit: props.item.unit,
     checked: false,
   });
 
@@ -25,7 +29,7 @@ const EditItem = (props) => {
         className="btn btn-warning"
         data-bs-toggle="modal"
         data-bs-target={"#editItemModal" + item.id}>
-        Edit item
+        {context.language === "en" ? "Edit" : "Edituj položku"}
       </button>
 
       <div
@@ -33,12 +37,13 @@ const EditItem = (props) => {
         id={"editItemModal" + item.id}
         tabindex="-1"
         aria-labelledby="editItemModalLabel"
-        aria-hidden="true">
+        aria-hidden="true"
+        data-bs-theme={context.theme}>
         <div className="modal-dialog">
-          <div className="modal-content bg-dark text-white">
+          <div className="modal-content">
             <div className="modal-header">
               <h5 className="modal-title" id="editItemModalLabel">
-                Edit item
+                {context.language === "en" ? "Edit item" : "Edituj položku"}
               </h5>
               <button
                 type="button"
@@ -46,24 +51,43 @@ const EditItem = (props) => {
                 data-bs-dismiss="modal"
                 aria-label="Close"></button>
             </div>
-            <div className="modal-body bg-dark text-white">
-              <div className="form-outline form-white mb-3">
+            <div className="modal-body">
+              <div className="form-outline mb-3">
+                <label htmlFor="name" className="form-label">
+                  {context.language === "en" ? "Name" : "Název"}
+                </label>
                 <input
                   id="name"
                   type="text"
-                  className="form-control"
+                  className="form-control text-dark"
                   placeholder="Item name"
                   value={item.name}
                   onChange={handleChange}
                 />
               </div>
-              <div className="form-outline form-white mb-3">
+              <div className="form-outline mb-3">
+                <label htmlFor="quantity" className="form-label">
+                  {context.language === "en" ? "Quantity" : "Množství"}
+                </label>
                 <input
                   id="quantity"
                   type="text"
-                  className="form-control"
+                  className="form-control text-dark"
                   placeholder="Quantity"
                   value={item.quantity}
+                  onChange={handleChange}
+                />
+              </div>
+              <div className="form-outline mb-3">
+                <label htmlFor="unit" className="form-label">
+                  {context.language === "en" ? "Unit" : "Jednotka"}
+                </label>
+                <input
+                  id="unit"
+                  type="text"
+                  className="form-control text-dark"
+                  placeholder="Unit"
+                  value={item.unit}
                   onChange={handleChange}
                 />
               </div>
@@ -73,14 +97,14 @@ const EditItem = (props) => {
                 type="button"
                 className="btn btn-secondary"
                 data-bs-dismiss="modal">
-                Close
+                {context.language === "en" ? "Close" : "Zavřít"}
               </button>
               <button
                 type="button"
                 className="btn btn-primary"
                 data-bs-dismiss="modal"
                 onClick={editItem}>
-                Edit
+                {context.language === "en" ? "Save changes" : "Uložit změny"}
               </button>
             </div>
           </div>

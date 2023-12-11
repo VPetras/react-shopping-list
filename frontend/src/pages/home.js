@@ -17,7 +17,7 @@ const Home = (props) => {
           console.log(error);
         });
     }
-  }, [context.logged]);
+  }, [context]);
 
   const setVisual = (visual) => {
     context.setVisualList(visual);
@@ -34,20 +34,20 @@ const Home = (props) => {
                 className="btn btn-primary mb-3 form-control border border-dark"
                 style={{ borderRadius: "20px 0px 0px 20px" }}
                 onClick={() => setVisual("active")}>
-                My active
+                {context.language === "en" ? "Active" : "Aktivní"}
               </button>
               <button
                 type="submit"
                 className="btn btn-primary mb-3 form-control border border-dark"
                 onClick={() => setVisual("shared")}>
-                Shared
+                {context.language === "en" ? "Shared" : "Sdílené"}
               </button>
               <button
                 type="submit"
                 className="btn btn-primary mb-3 form-control border border-dark "
                 style={{ borderRadius: "0px 20px 20px 0px" }}
                 onClick={() => setVisual("archived")}>
-                Archived
+                {context.language === "en" ? "Archived" : "Archivované"}
               </button>
             </div>
             <ShoppingListList />
@@ -67,11 +67,11 @@ const Home = (props) => {
                     ? "You can create your own lists, share them with your friends, and more!"
                     : "Můžete si vytvořit vlastní seznamy, sdílet je s přáteli a mnohem více!"}
                 </p>
-                <a>
+                <p>
                   {context.language === "en"
                     ? "Please Log in!"
                     : "Prosím Přihlaste se!"}
-                </a>
+                </p>
               </div>
             </div>
           </div>

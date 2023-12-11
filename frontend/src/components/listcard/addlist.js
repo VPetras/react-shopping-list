@@ -37,59 +37,68 @@ const AddList = (props) => {
 
   return (
     <>
-      <div className="col-md-6">
+      <div classNameName="col-md-6">
         <button
           type="button"
-          class="btn btn-primary"
+          className="btn btn-primary"
           data-bs-toggle="modal"
           data-bs-target="#addListModal">
-          Add shopping list
+          {context.language === "en"
+            ? "Add shopping list"
+            : "Přidej nákupní seznam"}
         </button>
       </div>
 
       <div
-        class="modal fade"
+        className="modal fade"
         id="addListModal"
         tabindex="-1"
         aria-labelledby="addListModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog">
-          <div class="modal-content bg-dark text-white">
-            <div class="modal-header">
-              <h5 class="modal-title" id="addListModalLabel">
-                Add shopping list
+        aria-hidden="true"
+        data-bs-theme={context.theme}>
+        <div className="modal-dialog">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5 className="modal-title" id="addListModalLabel">
+                {context.language === "en"
+                  ? "Add shopping list"
+                  : "Přidej nákupní seznam"}
               </h5>
               <button
                 type="button"
-                class="btn-close"
+                className="btn-close"
                 data-bs-dismiss="modal"
                 aria-label="Close"></button>
             </div>
-            <div class="modal-body bg-dark text-white">
-              <div className="form-outline form-white mb-3">
+            <div className="modal-body">
+              <div className="form-outline mb-3">
+                <label for="name" className="form-label text-dark">
+                  {context.language === "en" ? "List name" : "Název seznamu"}
+                </label>
                 <input
                   id="name"
                   type="text"
-                  className="form-control"
+                  className="form-control text-dark"
                   placeholder="List name"
                   value={list.name}
                   onChange={handleChange}
                 />
               </div>
             </div>
-            <div class="modal-footer">
+
+            <div className="modal-footer">
               <button
                 type="button"
-                class="btn btn-secondary"
+                className="btn btn-secondary"
                 data-bs-dismiss="modal">
-                Close
+                {context.language === "en" ? "Close" : "Zavřít"}
               </button>
               <button
                 type="button"
-                class="btn btn-primary"
+                className="btn btn-primary"
                 data-bs-dismiss="modal"
                 onClick={addList}>
-                Add
+                {context.language === "en" ? "Add" : "Přidat"}
               </button>
             </div>
           </div>

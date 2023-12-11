@@ -1,10 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 
 import DeleteItem from "./deleteitem";
 import EditItem from "./edititem";
 
+import { ShoppingListContext } from "../../context/shoppingListContext";
+
 const ItemList = (props) => {
-  console.log("ItemList", props.items);
+  const context = useContext(ShoppingListContext);
 
   const [items, setItems] = useState(props.items);
 
@@ -31,11 +33,21 @@ const ItemList = (props) => {
           <tr>
             <th scope="col">#</th>
             <th scope="col">id</th>
-            <th scope="col">Item</th>
-            <th scope="col">Quantity</th>
-            <th scope="col">Bought</th>
-            <th scope="col">Edit</th>
-            <th scope="col">Delete</th>
+            <th scope="col">
+              {context.language === "en" ? "Item" : "Položka"}
+            </th>
+            <th scope="col">
+              {context.language === "en" ? "Quantity" : "Množství"}
+            </th>
+            <th scope="col">
+              {context.language === "en" ? "Bought" : "Nakoupeno"}
+            </th>
+            <th scope="col">
+              {context.language === "en" ? "Edit" : "Editace"}
+            </th>
+            <th scope="col">
+              {context.language === "en" ? "Delete" : "Mazání"}
+            </th>
           </tr>
         </thead>
         <tbody>
@@ -52,7 +64,7 @@ const ItemList = (props) => {
               </th>
               <th scope="row">{item.id}</th>
               <td>{item.name}</td>
-              <td>{item.quantity}</td>
+              <td>{item.quantity + " " + item.unit}</td>
               <td>{item.checked ? "Yes" : "No"}</td>
               <td>
                 <EditItem id={props.id} item={item} handleEdit={handleEdit} />

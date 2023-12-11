@@ -138,7 +138,10 @@ export const LoginForm = () => {
 
   return (
     <div>
-      <div className="d-flex justify-content-center" style={{ height: "70vh" }}>
+      <div
+        className="d-flex justify-content-center"
+        style={{ height: "70vh" }}
+        data-bs-theme={context.theme}>
         <div
           className={
             "card " +
@@ -158,7 +161,7 @@ export const LoginForm = () => {
                   : "Prosím zadejte svůj email a heslo pro přihlášení do vašeho účtu."}
               </p>
 
-              <div className="form-outline form-white mb-3">
+              <div className="form-outline mb-3" data-bs-theme={context.theme}>
                 <label className="form-label" htmlFor="typeEmailX">
                   Email
                 </label>
@@ -166,7 +169,7 @@ export const LoginForm = () => {
                   type="email"
                   id="typeEmailX"
                   className={
-                    "form-control form-control-lg" +
+                    "form-control form-control-lg text-dark" +
                     (email.touched
                       ? email.valid
                         ? " is-valid"
@@ -193,7 +196,7 @@ export const LoginForm = () => {
                 </div>
               </div>
 
-              <div className="form-outline form-white mb-3">
+              <div className="form-outline  mb-3">
                 <label className="form-label" htmlFor="typePassword">
                   {context.language === "en" ? "Password" : "Heslo"}
                 </label>
@@ -201,7 +204,7 @@ export const LoginForm = () => {
                   type="password"
                   id="typePassword"
                   className={
-                    "form-control form-control-lg" +
+                    "form-control form-control-lg text-dark" +
                     (password.touched
                       ? password.valid
                         ? " is-valid"

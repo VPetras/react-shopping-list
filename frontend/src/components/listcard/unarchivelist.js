@@ -1,6 +1,8 @@
-import React from "react";
+import React, { useContext } from "react";
+import { ShoppingListContext } from "../../context/shoppingListContext";
 
 const UnArchiveList = (props) => {
+  const context = useContext(ShoppingListContext);
   return (
     <>
       <div className="col-md">
@@ -9,7 +11,9 @@ const UnArchiveList = (props) => {
           class="btn btn-warning"
           data-bs-toggle="modal"
           data-bs-target={"#unArchiveListModal" + props.id}>
-          Unarchive shopping list
+          {context.language === "en"
+            ? "Unarchive shopping list"
+            : "Odarchivovat nákupní seznam"}
         </button>
       </div>
 
@@ -18,12 +22,15 @@ const UnArchiveList = (props) => {
         id={"unArchiveListModal" + props.id}
         tabindex="-1"
         aria-labelledby="unArchiveListModalLabel"
-        aria-hidden="true">
+        aria-hidden="true"
+        data-bs-theme={context.theme}>
         <div class="modal-dialog">
-          <div class="modal-content bg-dark text-white">
+          <div class="modal-content">
             <div class="modal-header">
               <h5 class="modal-title" id="unArchiveListModalLabel">
-                unArchive shopping list
+                {context.language === "en"
+                  ? "Unarchive shopping list"
+                  : "Odarchivovat nákupní seznam"}
               </h5>
               <button
                 type="button"
@@ -31,22 +38,26 @@ const UnArchiveList = (props) => {
                 data-bs-dismiss="modal"
                 aria-label="Close"></button>
             </div>
-            <div class="modal-body bg-dark text-white"></div>
-            <p>Are you sure you want to unArchive this List?</p>
+            <div class="modal-body">
+              <p>
+                {context.language === "en"
+                  ? "Are you sure you want to unArchive this List?"
+                  : "Opravdu chcete odarchivovat tento seznam?"}
+              </p>
+            </div>
             <div class="modal-footer">
               <button
                 type="button"
                 class="btn btn-secondary"
                 data-bs-dismiss="modal">
-                Close
+                {context.language === "en" ? "Close" : "Zavřít"}
               </button>
               <button
                 type="button"
                 class="btn btn-warning"
                 data-bs-dismiss="modal"
                 onClick={props.handleUnArchive}>
-                {" "}
-                unArchive
+                {context.language === "en" ? "Unarchive" : "Odarchivovat"}
               </button>
             </div>
           </div>

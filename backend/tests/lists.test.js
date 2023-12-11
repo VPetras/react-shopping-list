@@ -28,28 +28,55 @@ afterEach(async () => {
   await mongo_client.close();
 });
 
+const registerUser1 = async () => {
+  const user = {
+    surname: "Petrásek",
+    name: "Vojtěch",
+    nickname: "Sonic",
+    email: "vojtechpetrasek@gmail.com",
+    password: "testtest",
+  };
+
+  let ret_user = [];
+
+  await request(app)
+    .post("/register")
+    .send(user)
+    .expect(200)
+    .expect("Content-Type", /json/)
+    .then((res) => {
+      ret_user = res.body;
+    });
+
+  return ret_user;
+};
+
+const registerUser2 = async () => {
+  const user = {
+    surname: "Petrásek",
+    name: "Vojtěch",
+    nickname: "VPetras",
+    email: "vojtech.petrasek@gmail.com",
+    password: "testtest",
+  };
+
+  let ret_user = [];
+
+  await request(app)
+    .post("/register")
+    .send(user)
+    .expect(200)
+    .expect("Content-Type", /json/)
+    .then((res) => {
+      ret_user = res.body;
+    });
+
+  return ret_user;
+};
+
 describe("POST /list/create", () => {
   test("It should create a new list", async () => {
-    const user = {
-      surname: "Petrásek",
-      name: "Vojtěch",
-      nickname: "test",
-      email: "vojtechpetrasek@gmail.com",
-      password: "testtest",
-    };
-
-    let uset_token = "";
-
-    await request(app)
-      .post("/register")
-      .send(user)
-      .expect(200)
-      .expect("Content-Type", /json/)
-      .then((res) => {
-        expect(res.statusCode).toBe(200);
-        expect(res.body).toHaveProperty("token");
-        user_token = res.body.token;
-      });
+    const user = await registerUser1();
 
     const list = {
       name: "Test list",
@@ -60,7 +87,7 @@ describe("POST /list/create", () => {
     await request(app)
       .post("/list/create")
       .send(list)
-      .set("Authorization", `Bearer ${user_token}`)
+      .set("Authorization", `Bearer ${user.token}`)
       .expect(201)
       .expect("Content-Type", /json/)
       .then((res) => {
@@ -73,6 +100,79 @@ describe("POST /list/create", () => {
         expect(res.body.name).toBe(list.name);
         expect(res.body.archived).toBe(list.archived);
         expect(res.body.item_list).toEqual(list.item_list);
+      });
+  });
+
+  test("It should create a new list with shared users", async () => {
+    const user1 = await registerUser1();
+    const user2 = await registerUser2();
+
+    const list = {
+      name: "Test list",
+      archived: false,
+      item_list: [],
+      shared_users: [{ id: user2._id, nickname: user2.nickname }],
+    };
+
+    await request(app)
+      .post("/list/create")
+      .send(list)
+      .set("Authorization", `Bearer ${user1.token}`)
+      .expect(201)
+      .expect("Content-Type", /json/)
+      .then((res) => {
+        expect(res.statusCode).toBe(201);
+        expect(res.body).toHaveProperty("name");
+        expect(res.body).toHaveProperty("archived");
+        expect(res.body).toHaveProperty("item_list");
+        expect(res.body).toHaveProperty("sys");
+        expect(res.body).toHaveProperty("shared_users");
+        expect(res.body.name).toBe(list.name);
+        expect(res.body.archived).toBe(list.archived);
+        expect(res.body.item_list).toEqual(list.item_list);
+        expect(res.body.shared_users).toEqual(list.shared_users);
+      });
+  });
+
+  test("It should get error 400 invalid shared users", async () => {
+    const user = await registerUser1();
+
+    const list = {
+      name: "Test list",
+      archived: false,
+      shared_users: [{ id: "123456789", owner: true }],
+    };
+
+    await request(app)
+      .post("/list/create")
+      .send(list)
+      .set("Authorization", `Bearer ${user.token}`)
+      .expect(400)
+      .expect("Content-Type", /json/)
+      .then((res) => {
+        expect(res.statusCode).toBe(400);
+        expect(res.body).toHaveProperty("errors");
+      });
+  });
+
+  test("It should get error 400 invalid item list", async () => {
+    const user = await registerUser1();
+
+    const list = {
+      name: "Test list",
+      archived: false,
+      item_list: [{ name: "Test item" }],
+    };
+
+    await request(app)
+      .post("/list/create")
+      .send(list)
+      .set("Authorization", `Bearer ${user.token}`)
+      .expect(400)
+      .expect("Content-Type", /json/)
+      .then((res) => {
+        expect(res.statusCode).toBe(400);
+        expect(res.body).toHaveProperty("errors");
       });
   });
   test("It should get error 401", async () => {
@@ -106,30 +206,11 @@ describe("GET /lists", () => {
       });
   });
   test("It should get all lists empty", async () => {
-    const user = {
-      surname: "Petrásek",
-      name: "Vojtěch",
-      nickname: "test",
-      email: "vojtechpetrasek@gamil.com",
-      password: "testtest",
-    };
-
-    let user_token = "";
-
-    await request(app)
-      .post("/register")
-      .send(user)
-      .expect(200)
-      .expect("Content-Type", /json/)
-      .then((res) => {
-        expect(res.statusCode).toBe(200);
-        expect(res.body).toHaveProperty("token");
-        user_token = res.body.token;
-      });
+    const user = await registerUser1();
 
     await request(app)
       .get("/lists")
-      .set("Authorization", `Bearer ${user_token}`)
+      .set("Authorization", `Bearer ${user.token}`)
       .expect(200)
       .expect("Content-Type", /json/)
       .then((res) => {
@@ -143,47 +224,10 @@ describe("GET /lists", () => {
       });
   });
   test("It should get all lists active shared and archived", async () => {
-    const user1 = {
-      surname: "Petrásek",
-      name: "Vojtěch",
-      nickname: "Sonic",
-      email: "vojtechpetrasek@gmail.com",
-      password: "testtest",
-    };
+    const user1 = await registerUser1();
+    const user2 = await registerUser2();
 
-    const user2 = {
-      surname: "Petrásek",
-      name: "Vojtěch",
-      nickname: "VPetras",
-      email: "vojtech.petrasek@gmail.com",
-      password: "testtest",
-    };
-
-    let ret_user1 = [];
-
-    await request(app)
-      .post("/register")
-      .send(user1)
-      .expect(200)
-      .expect("Content-Type", /json/)
-      .then((res) => {
-        expect(res.statusCode).toBe(200);
-        expect(res.body).toHaveProperty("token");
-        ret_user1 = res.body;
-      });
-
-    let ret_user2 = [];
-
-    await request(app)
-      .post("/register")
-      .send(user2)
-      .expect(200)
-      .expect("Content-Type", /json/)
-      .then((res) => {
-        expect(res.statusCode).toBe(200);
-        expect(res.body).toHaveProperty("token");
-        ret_user2 = res.body;
-      });
+    console.log(user1);
 
     const list1 = {
       name: "Test list",
@@ -203,13 +247,13 @@ describe("GET /lists", () => {
       name: "Test list 3",
       archived: false,
       item_list: [],
-      shared_users: [{ id: ret_user1._id, nickname: ret_user1.nickname }],
+      shared_users: [{ id: user1._id, nickname: user1.nickname }],
     };
 
     await request(app)
       .post("/list/create")
       .send(list1)
-      .set("Authorization", `Bearer ${ret_user1.token}`)
+      .set("Authorization", `Bearer ${user1.token}`)
       .expect(201)
       .expect("Content-Type", /json/)
       .then((res) => {
@@ -227,7 +271,7 @@ describe("GET /lists", () => {
     await request(app)
       .post("/list/create")
       .send(list2)
-      .set("Authorization", `Bearer ${ret_user1.token}`)
+      .set("Authorization", `Bearer ${user1.token}`)
       .expect(201)
       .expect("Content-Type", /json/)
       .then((res) => {
@@ -245,7 +289,7 @@ describe("GET /lists", () => {
     await request(app)
       .post("/list/create")
       .send(list3)
-      .set("Authorization", `Bearer ${ret_user2.token}`)
+      .set("Authorization", `Bearer ${user2.token}`)
       .expect(201)
       .expect("Content-Type", /json/)
       .then((res) => {
@@ -258,11 +302,12 @@ describe("GET /lists", () => {
         expect(res.body.name).toBe(list3.name);
         expect(res.body.archived).toBe(list3.archived);
         expect(res.body.item_list).toEqual(list3.item_list);
+        console.log(res.body);
       });
 
     await request(app)
       .get("/lists")
-      .set("Authorization", `Bearer ${ret_user1.token}`)
+      .set("Authorization", `Bearer ${user1.token}`)
       .expect(200)
       .expect("Content-Type", /json/)
       .then((res) => {
@@ -294,28 +339,7 @@ describe("GET /lists", () => {
 
 describe("GET /list/:id", () => {
   test("It should get a list", async () => {
-    const user = {
-      surname: "Petrásek",
-      name: "Vojtěch",
-      nickname: "test",
-      email: "vojtechpetrasek@gmail.com",
-      password: "testtest",
-    };
-
-    let user_token = "";
-    let user_id = "";
-
-    await request(app)
-      .post("/register")
-      .send(user)
-      .expect(200)
-      .expect("Content-Type", /json/)
-      .then((res) => {
-        expect(res.statusCode).toBe(200);
-        expect(res.body).toHaveProperty("token");
-        user_token = res.body.token;
-        user_id = res.body._id;
-      });
+    const user = await registerUser1();
 
     const list = {
       name: "Test list",
@@ -329,7 +353,7 @@ describe("GET /list/:id", () => {
     await request(app)
       .post("/list/create")
       .send(list)
-      .set("Authorization", `Bearer ${user_token}`)
+      .set("Authorization", `Bearer ${user.token}`)
       .expect(201)
       .expect("Content-Type", /json/)
       .then((res) => {
@@ -347,7 +371,7 @@ describe("GET /list/:id", () => {
 
     await request(app)
       .get(`/list/${list_id}`)
-      .set("Authorization", `Bearer ${user_token}`)
+      .set("Authorization", `Bearer ${user.token}`)
       .expect(200)
       .expect("Content-Type", /json/)
       .then((res) => {
@@ -360,12 +384,9 @@ describe("GET /list/:id", () => {
         expect(res.body.name).toBe(list.name);
         expect(res.body.archived).toBe(list.archived);
         expect(res.body.item_list).toEqual(list.item_list);
-        expect(res.body.owner_id).toBe(user_id);
+        expect(res.body.owner_id).toBe(user._id);
       });
   });
-});
-
-describe("GET /list/:id", () => {
   test("it should get error 401", async () => {
     await request(app)
       .get("/list/123456789")
@@ -378,30 +399,11 @@ describe("GET /list/:id", () => {
   });
 
   test("it should get error 404", async () => {
-    const user = {
-      surname: "Petrásek",
-      name: "Vojtěch",
-      nickname: "test",
-      email: "vojtechpetrasek@gmail.com",
-      password: "testtest",
-    };
-
-    let user_token = "";
-
-    await request(app)
-      .post("/register")
-      .send(user)
-      .expect(200)
-      .expect("Content-Type", /json/)
-      .then((res) => {
-        expect(res.statusCode).toBe(200);
-        expect(res.body).toHaveProperty("token");
-        user_token = res.body.token;
-      });
+    const user = await registerUser1();
 
     await request(app)
       .get("/list/123456789")
-      .set("Authorization", `Bearer ${user_token}`)
+      .set("Authorization", `Bearer ${user.token}`)
       .expect(404)
       .expect("Content-Type", /json/)
       .then((res) => {
@@ -411,46 +413,8 @@ describe("GET /list/:id", () => {
   });
 
   test("it should get error 403", async () => {
-    const user1 = {
-      surname: "Petrásek",
-      name: "Vojtěch",
-      nickname: "Sonic",
-      email: "vojtechpetrasek@gmail.com",
-      password: "testtest",
-    };
-
-    const user2 = {
-      surname: "Petrásek",
-      name: "Vojtěch",
-      nickname: "VPetras",
-      email: "vojtech.petrasek@gmail.com",
-      password: "testtest",
-    };
-
-    let ret_user1 = [];
-
-    await request(app)
-      .post("/register")
-      .send(user1)
-      .expect(200)
-      .expect("Content-Type", /json/)
-      .then((res) => {
-        expect(res.statusCode).toBe(200);
-        expect(res.body).toHaveProperty("token");
-        ret_user1 = res.body;
-      });
-
-    let ret_user2 = [];
-
-    await request(app)
-      .post("/register")
-      .send(user2)
-      .expect(200)
-      .expect("Content-Type", /json/)
-      .then((res) => {
-        expect(res.statusCode).toBe(200);
-        ret_user2 = res.body;
-      });
+    const user1 = await registerUser1();
+    const user2 = await registerUser2();
 
     const list = {
       name: "Test list",
@@ -464,7 +428,7 @@ describe("GET /list/:id", () => {
     await request(app)
       .post("/list/create")
       .send(list)
-      .set("Authorization", `Bearer ${ret_user1.token}`)
+      .set("Authorization", `Bearer ${user1.token}`)
       .expect(201)
       .expect("Content-Type", /json/)
       .then((res) => {
@@ -474,7 +438,7 @@ describe("GET /list/:id", () => {
 
     await request(app)
       .get(`/list/${list_id}`)
-      .set("Authorization", `Bearer ${ret_user2.token}`)
+      .set("Authorization", `Bearer ${user2.token}`)
       .expect(403)
       .expect("Content-Type", /json/)
       .then((res) => {
@@ -486,24 +450,7 @@ describe("GET /list/:id", () => {
 
 describe("PUT /list/:id", () => {
   test("It should update a list", async () => {
-    const user = {
-      surname: "Petrásek",
-      name: "Vojtěch",
-      nickname: "test",
-      email: "vojtech.petrasek@gmail.com",
-      password: "testtest",
-    };
-
-    let user_token = "";
-
-    await request(app)
-      .post("/register")
-      .send(user)
-      .expect(200)
-      .expect("Content-Type", /json/)
-      .then((res) => {
-        user_token = res.body.token;
-      });
+    const user = await registerUser1();
 
     const list = {
       name: "Test list",
@@ -517,7 +464,7 @@ describe("PUT /list/:id", () => {
     await request(app)
       .post("/list/create")
       .send(list)
-      .set("Authorization", `Bearer ${user_token}`)
+      .set("Authorization", `Bearer ${user.token}`)
       .expect(201)
       .expect("Content-Type", /json/)
       .then((res) => {
@@ -527,14 +474,16 @@ describe("PUT /list/:id", () => {
     const list_update = {
       name: "Test list updated",
       archived: true,
-      item_list: [{ name: "Test item", checked: false }],
+      item_list: [
+        { name: "Test item", checked: false, quantity: 1, unit: "kg" },
+      ],
       shared_users: [],
     };
 
     await request(app)
       .put(`/list/${list_id}`)
       .send(list_update)
-      .set("Authorization", `Bearer ${user_token}`)
+      .set("Authorization", `Bearer ${user.token}`)
       .expect(200)
       .expect("Content-Type", /json/)
       .then((res) => {
@@ -556,36 +505,21 @@ describe("PUT /list/:id", () => {
   });
 
   test("it should get error 404", async () => {
-    const user = {
-      surname: "Petrásek",
-      name: "Vojtěch",
-      nickname: "test",
-      email: "vojtechpetrasek@gmail.com",
-      password: "testtest",
-    };
-
-    let user_token = "";
-
-    await request(app)
-      .post("/register")
-      .send(user)
-      .expect(200)
-      .expect("Content-Type", /json/)
-      .then((res) => {
-        user_token = res.body.token;
-      });
+    const user = await registerUser1();
 
     const list_update = {
       name: "Test list updated",
       archived: true,
-      item_list: [{ name: "Test item", checked: false }],
+      item_list: [
+        { name: "Test item", checked: false, quantity: 1, unit: "kg" },
+      ],
       shared_users: [],
     };
 
     await request(app)
       .put("/list/123456789")
       .send(list_update)
-      .set("Authorization", `Bearer ${user_token}`)
+      .set("Authorization", `Bearer ${user.token}`)
       .expect(404)
       .expect("Content-Type", /json/)
       .then((res) => {
@@ -593,28 +527,10 @@ describe("PUT /list/:id", () => {
         expect(res.body).toHaveProperty("errors");
       });
   });
-});
 
-describe("DELETE /list/:id", () => {
-  test("It should delete a list", async () => {
-    const user = {
-      surname: "Petrásek",
-      name: "Vojtěch",
-      nickname: "test",
-      email: "vojtechpetrasek@gmail.com",
-      password: "testtest",
-    };
-
-    let user_token = "";
-
-    await request(app)
-      .post("/register")
-      .send(user)
-      .expect(200)
-      .expect("Content-Type", /json/)
-      .then((res) => {
-        user_token = res.body.token;
-      });
+  test("it should get error 403", async () => {
+    const user1 = await registerUser1();
+    const user2 = await registerUser2();
 
     const list = {
       name: "Test list",
@@ -628,7 +544,178 @@ describe("DELETE /list/:id", () => {
     await request(app)
       .post("/list/create")
       .send(list)
-      .set("Authorization", `Bearer ${user_token}`)
+      .set("Authorization", `Bearer ${user1.token}`)
+      .expect(201)
+      .expect("Content-Type", /json/)
+      .then((res) => {
+        list_id = res.body._id;
+      });
+
+    const list_update = {
+      name: "Test list updated",
+      archived: true,
+      item_list: [
+        { name: "Test item", checked: false, quantity: 1, unit: "kg" },
+      ],
+      shared_users: [],
+    };
+
+    await request(app)
+      .put(`/list/${list_id}`)
+      .send(list_update)
+      .set("Authorization", `Bearer ${user2.token}`)
+      .expect(403)
+      .expect("Content-Type", /json/)
+      .then((res) => {
+        expect(res.statusCode).toBe(403);
+        expect(res.body).toHaveProperty("errors");
+      });
+
+    await request(app)
+      .put(`/list/${list_id}`)
+      .send(list_update)
+      .set("Authorization", `Bearer ${user1.token}`)
+      .expect(200)
+      .expect("Content-Type", /json/)
+      .then((res) => {
+        expect(res.statusCode).toBe(200);
+      });
+  });
+
+  test("it should get error 400", async () => {
+    const user = await registerUser1();
+
+    const list = {
+      name: "Test list",
+      archived: false,
+      item_list: [],
+      shared_users: [],
+    };
+
+    let list_id = "";
+
+    await request(app)
+      .post("/list/create")
+      .send(list)
+      .set("Authorization", `Bearer ${user.token}`)
+      .expect(201)
+      .expect("Content-Type", /json/)
+      .then((res) => {
+        list_id = res.body._id;
+      });
+
+    await request(app)
+      .put(`/list/${list_id}`)
+      .send({})
+      .set("Authorization", `Bearer ${user.token}`)
+      .expect(400)
+      .expect("Content-Type", /json/)
+      .then((res) => {
+        expect(res.statusCode).toBe(400);
+        expect(res.body).toHaveProperty("errors");
+      });
+  });
+
+  test("it should get error 400", async () => {
+    const user = await registerUser1();
+
+    const list = {
+      name: "Test list",
+      archived: false,
+      item_list: [],
+      shared_users: [],
+    };
+
+    let list_id = "";
+
+    await request(app)
+      .post("/list/create")
+      .send(list)
+      .set("Authorization", `Bearer ${user.token}`)
+      .expect(201)
+      .expect("Content-Type", /json/)
+      .then((res) => {
+        list_id = res.body._id;
+      });
+
+    await request(app)
+      .put(`/list/${list_id}`)
+      .send({
+        name: "Test list updated",
+        archived: true,
+        item_list: [{ name: "test item", quantity: 1 }],
+      })
+      .set("Authorization", `Bearer ${user.token}`)
+      .expect(400)
+      .expect("Content-Type", /json/)
+      .then((res) => {
+        expect(res.statusCode).toBe(400);
+        expect(res.body).toHaveProperty("errors");
+      });
+  });
+
+  test("it should get error 403", async () => {
+    const user1 = await registerUser1();
+    const user2 = await registerUser2();
+
+    const list = {
+      name: "Test list",
+      archived: false,
+      item_list: [],
+      shared_users: [],
+    };
+
+    let list_id = "";
+
+    await request(app)
+      .post("/list/create")
+      .send(list)
+      .set("Authorization", `Bearer ${user1.token}`)
+      .expect(201)
+      .expect("Content-Type", /json/)
+      .then((res) => {
+        list_id = res.body._id;
+      });
+
+    const list_update = {
+      name: "Test list updated",
+      archived: true,
+      item_list: [
+        { name: "Test item", checked: false, quantity: 1, unit: "kg" },
+      ],
+      shared_users: [{ id: user1._id, nickname: user1.nickname }],
+    };
+
+    await request(app)
+      .put(`/list/${list_id}`)
+      .send(list_update)
+      .set("Authorization", `Bearer ${user2.token}`)
+      .expect(403)
+      .expect("Content-Type", /json/)
+      .then((res) => {
+        expect(res.statusCode).toBe(403);
+        expect(res.body).toHaveProperty("errors");
+      });
+  });
+});
+
+describe("DELETE /list/:id", () => {
+  test("It should delete a list", async () => {
+    const user = await registerUser1();
+
+    const list = {
+      name: "Test list",
+      archived: false,
+      item_list: [],
+      shared_users: [],
+    };
+
+    let list_id = "";
+
+    await request(app)
+      .post("/list/create")
+      .send(list)
+      .set("Authorization", `Bearer ${user.token}`)
       .expect(201)
       .expect("Content-Type", /json/)
       .then((res) => {
@@ -637,7 +724,7 @@ describe("DELETE /list/:id", () => {
 
     await request(app)
       .delete(`/list/${list_id}`)
-      .set("Authorization", `Bearer ${user_token}`)
+      .set("Authorization", `Bearer ${user.token}`)
       .expect(200)
       .expect("Content-Type", /json/)
       .then((res) => {
@@ -647,7 +734,7 @@ describe("DELETE /list/:id", () => {
 
     await request(app)
       .get(`/list/${list_id}`)
-      .set("Authorization", `Bearer ${user_token}`)
+      .set("Authorization", `Bearer ${user.token}`)
       .expect(404)
       .expect("Content-Type", /json/)
       .then((res) => {
@@ -666,28 +753,11 @@ describe("DELETE /list/:id", () => {
   });
 
   test("it should get error 404", async () => {
-    const user = {
-      surname: "Petrásek",
-      name: "Vojtěch",
-      nickname: "test",
-      email: "vojtechpetrasek@gmail.com",
-      password: "testtest",
-    };
-
-    let user_token = "";
-
-    await request(app)
-      .post("/register")
-      .send(user)
-      .expect(200)
-      .expect("Content-Type", /json/)
-      .then((res) => {
-        user_token = res.body.token;
-      });
+    const user = await registerUser1();
 
     await request(app)
       .delete("/list/123456789")
-      .set("Authorization", `Bearer ${user_token}`)
+      .set("Authorization", `Bearer ${user.token}`)
       .expect(404)
       .expect("Content-Type", /json/)
       .then((res) => {

@@ -58,6 +58,8 @@ const ShoppingListList = (props) => {
             status={`${
               list.item_list.filter((i) => i.checked === true).length
             }/${list.item_list.length}`}
+            items={list.item_list.length}
+            checked={list.item_list.filter((i) => i.checked === true).length}
           />
         ));
       }

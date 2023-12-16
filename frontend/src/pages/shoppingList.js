@@ -14,6 +14,7 @@ import {
   editListFetch,
   deleteListFetch,
 } from "../fetch/listFetches";
+import SinglePie from "../components/Graph/Pie";
 
 const ShoppingList = (props) => {
   const context = useContext(ShoppingListContext);
@@ -147,13 +148,27 @@ const ShoppingList = (props) => {
               </>
             )}
           </div>
-          <ItemList
-            id={list.id}
-            items={list.item_list}
-            handleCheckItem={handleCheckItem}
-            handleDeleteItem={handleDeleteItem}
-            handleEditItem={handleEditItem}
-          />
+          <div className="row">
+            <div className="col-8">
+              <ItemList
+                id={list.id}
+                items={list.item_list}
+                handleCheckItem={handleCheckItem}
+                handleDeleteItem={handleDeleteItem}
+                handleEditItem={handleEditItem}
+              />
+            </div>
+            <div
+              className="col-2"
+              style={{ minWidth: "300px", maxHeight: "400px" }}>
+              <SinglePie
+                checked={
+                  list.item_list.filter((i) => i.checked === true).length
+                }
+                items={list.item_list.length}
+              />
+            </div>
+          </div>
           <AddItem id={list.id} handleAddItem={handleAddItem} />
         </div>
       </>
